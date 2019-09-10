@@ -19,7 +19,8 @@
     "react-native-vector-icons": "^6.6.0",
     "react-navigation": "^3.12.1",
     "rlp": "^2.2.3",
-    "use-deep-compare-effect": "^1.2.0"
+    "use-deep-compare-effect": "^1.2.0",
+    "prop-types": "^15.7.2"
   },
   "devDependencies": {
     "@babel/core": "^7.5.4",
@@ -27,6 +28,7 @@
     "@react-native-community/eslint-config": "^0.0.5",
     "babel-eslint": "^9.0.0",
     "babel-jest": "^24.8.0",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-config-prettier": "^4.3.0",

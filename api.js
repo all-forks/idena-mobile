@@ -48,3 +48,21 @@ export async function submitLongAnswers(answers, nonce, epoch) {
   })
   return result
 }
+
+export async function getBalance(address) {
+  const { result } = await callRpc('dna_getBalance', { address })
+  return result
+}
+
+export async function activateInviteCode(key, address) {
+  const { result, error } = await callRpc('dna_activateInvite', {
+    key,
+    address,
+  })
+
+  if (error) {
+    return error
+  }
+
+  return result
+}

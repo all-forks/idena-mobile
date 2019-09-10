@@ -10,16 +10,19 @@ import {
   Image,
   // NativeModules,
 } from 'react-native'
+
 import {
   Provider as PaperProvider,
   ActivityIndicator,
   Card,
 } from 'react-native-paper'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { Colors } from 'react-native/Libraries/NewAppScreen'
-import { createAppContainer, createBottomTabNavigator } from 'react-navigation'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useRpc, useInterval, useTimeout, usePoll } from './lib'
+
+import ProfileNavigation from './src/navigation/ProfileNavigation'
+
 import {
   useValidationState,
   ValidationProvider,
@@ -39,13 +42,18 @@ import {
   EpochPeriod,
   useValidationTimer,
 } from './validation'
+
 import { arrayBufferToBase64, reorderList } from './utils'
+
 import {
   EpochProvider,
   useEpochState,
   useTimingState,
   TimingProvider,
 } from './epoch'
+
+import { InviteProvider, IdentityProvider } from './src/providers'
+
 import { EXTRA_FLIPS_DELAY } from './config'
 
 // const { IdenaNode } = NativeModules
@@ -71,15 +79,19 @@ function Screen({ children }) {
   )
 }
 
-function AppProviders({ children }) {
+export function AppProviders({ children }) {
   return (
     <TimingProvider>
-      <EpochProvider>{children}</EpochProvider>
+      <EpochProvider>
+        <IdentityProvider>
+          <InviteProvider>{children}</InviteProvider>
+        </IdentityProvider>
+      </EpochProvider>
     </TimingProvider>
   )
 }
 
-function WithValidation({ children }) {
+export function WithValidation({ children }) {
   const epoch = useEpochState()
 
   const isValidationRunning =
@@ -100,8 +112,8 @@ function WithValidation({ children }) {
   )
 }
 
-function Profile() {
-  const [{ result: identity }] = usePoll(useRpc('dna_identity'), 1000 * 1)
+export function Profile() {
+  // const [{ result: identity }] = usePoll(useRpc('dna_identity'), 1000 * 1)
 
   if (!identity) {
     return (
@@ -129,7 +141,7 @@ function Profile() {
   )
 }
 
-function BeforeValidation() {
+export function BeforeValidation() {
   const epoch = useEpochState()
 
   const [text, setText] = React.useState()
@@ -444,6 +456,84 @@ function Timer({ type }) {
   )
 }
 
+/* eslint-disable */
+
+import { createBottomTabNavigator, createAppContainer } from 'react-navigation'
+
+const MainNavigator = createBottomTabNavigator(
+  {
+    Home: {
+      screen: () => (
+        <Screen>
+          <Profile />
+          <BeforeValidation />
+        </Screen>
+      ),
+    },
+    Contacts: () => (
+      <Screen>
+        <Text style={{ color: 'white' }}>Contacts</Text>
+      </Screen>
+    ),
+    Chats: () => (
+      <Screen>
+        <Text style={{ color: 'white' }}>Chats</Text>
+      </Screen>
+    ),
+    Validation: {
+      screen: () => (
+        <Screen>
+          <ValidationProvider>
+            <ValidationScreen />
+          </ValidationProvider>
+        </Screen>
+      ),
+    },
+    Profile: ProfileNavigation
+  },
+  {
+    initialRouteName: 'Profile',
+    defaultNavigationOptions: ({ navigation: { state } }) => ({
+      tabBarIcon: ({ tintColor }) => {
+        const { routeName } = state
+        const IconComponent = Icon
+        let iconName
+
+        switch (routeName) {
+          case 'Home':
+            iconName = 'home'
+            break
+          case 'Contacts':
+            iconName = 'contacts'
+            break
+          case 'Wallets':
+            iconName = 'account-balance-wallet'
+            break
+          case 'Chats':
+            iconName = 'chat'
+            break
+          case 'Validation':
+            iconName = 'check'
+            break
+          case 'Profile':
+            iconName = 'person'
+            break
+          default:
+            break
+        }
+
+        return <IconComponent name={iconName} size={25} color={tintColor} />
+      },
+    }),
+    tabBarOptions: {
+      activeTintColor: 'rgb(87,143,255)',
+      inactiveTintColor: 'rgb(210,212,217)',
+    },
+  }
+)
+
+export default createAppContainer(MainNavigator)
+
 const styles = StyleSheet.create({
   full: {
     flex: 1,
@@ -453,7 +543,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   body: {
-    backgroundColor: Colors.black,
+    backgroundColor: Colors.white,
     flex: 1,
   },
   sectionContainer: {
@@ -541,7 +631,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'white',
-    // boxShadow: '0 0 0 1px #fff',
   },
   thumbImage: {
     width: '100%',
@@ -584,7 +673,6 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderStyle: 'solid',
     borderColor: 'rgb(87,143,255)',
-    // boxShadow: '0 0 0 2px rgb(87,143,255), 0 0 0 5px rgba(87,143,255, .25)',
   },
   flipImage: {
     width: 140,
@@ -659,72 +747,3 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 })
-
-const MainNavigator = createBottomTabNavigator(
-  {
-    Home: {
-      screen: () => (
-        <Screen>
-          <Profile />
-          <BeforeValidation />
-        </Screen>
-      ),
-    },
-    Contacts: () => (
-      <Screen>
-        <Text style={{ color: 'white' }}>Contacts</Text>
-      </Screen>
-    ),
-    Chats: () => (
-      <Screen>
-        <Text style={{ color: 'white' }}>Chats</Text>
-      </Screen>
-    ),
-    Validation: {
-      screen: () => (
-        <Screen>
-          <ValidationProvider>
-            <ValidationScreen />
-          </ValidationProvider>
-        </Screen>
-      ),
-    },
-  },
-  {
-    defaultNavigationOptions: ({ navigation }) => ({
-      tabBarIcon: ({ tintColor }) => {
-        const { routeName } = navigation.state
-        const IconComponent = Icon
-        let iconName
-
-        switch (routeName) {
-          case 'Home':
-            iconName = 'home'
-            break
-          case 'Contacts':
-            iconName = 'contacts'
-            break
-          case 'Wallets':
-            iconName = 'account-balance-wallet'
-            break
-          case 'Chats':
-            iconName = 'chat'
-            break
-          case 'Validation':
-            iconName = 'check'
-            break
-          default:
-            break
-        }
-
-        return <IconComponent name={iconName} size={25} color={tintColor} />
-      },
-    }),
-    tabBarOptions: {
-      activeTintColor: 'rgb(87,143,255)',
-      inactiveTintColor: 'rgb(210,212,217)',
-    },
-  }
-)
-
-export default createAppContainer(MainNavigator)

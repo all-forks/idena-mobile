@@ -25,7 +25,6 @@
 		6C47EB463FF649BCB3DC3566 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 04BDF9D85A354902B0D28DC3 /* FontAwesome5_Regular.ttf */; };
 		759A105683784B338E26A2B5 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6DC7F7F8AE464D9E8D6A55A7 /* Feather.ttf */; };
 		7814B7CA22E8658A00335AEF /* IdenaNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 7814B7C922E8658A00335AEF /* IdenaNode.m */; };
-		78870512231BDA720079E9F0 /* Node.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78870511231BDA720079E9F0 /* Node.framework */; };
 		83A7E3CB37C34061987268B2 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5C15218CDE074ECCB01160B3 /* Fontisto.ttf */; };
 		9DFCF2AF53F1B830C0C96714 /* libPods-IdFonTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9F94C84AD2920BFA6012FA /* libPods-IdFonTests.a */; };
 		B54C4217284599E5B12F3670 /* libPods-IdFon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 23BECBAD45C33A10EAA4E32B /* libPods-IdFon.a */; };
@@ -119,7 +118,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				78870512231BDA720079E9F0 /* Node.framework in Frameworks */,
 				B54C4217284599E5B12F3670 /* libPods-IdFon.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -360,6 +358,11 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = KXR6RLJ445;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -457,7 +460,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		295D3D599C5D6598D71E593D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -486,10 +489,8 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-IdFon/Pods-IdFon-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-IdFon/Pods-IdFon-resources.sh",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
@@ -508,8 +509,6 @@
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
 			);
 			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
@@ -530,7 +529,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-IdFon/Pods-IdFon-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-IdFon/Pods-IdFon-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
