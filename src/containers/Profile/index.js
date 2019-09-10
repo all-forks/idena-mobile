@@ -27,7 +27,7 @@ import { IdentityStatus } from '../../utils'
 
 import styles from './styles'
 
-function Profile() {
+function Profile({ navigation }) {
   const [{ result: identity }] = usePoll(useRpc('dna_identity'), 1000 * 1)
   const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 10)
   const [{ result: accounts }] = usePoll(useRpc('account_list'), 1000 * 10)
@@ -59,6 +59,27 @@ function Profile() {
           )
         })
         .catch(error => console.log('err:', error))
+    }
+  }
+
+  function handlePressButton(index) {
+    switch (index) {
+      case 0: {
+        break
+      }
+
+      case 1: {
+        break
+      }
+
+      case 2: {
+        navigation.navigate('Flip')
+        break
+      }
+
+      default: {
+        break
+      }
     }
   }
 
@@ -130,7 +151,7 @@ function Profile() {
   function renderBoard() {
     const { stake, age, madeFlips, address } = identity
 
-    const { currentPeriod, nextValidation } = epoch
+    // const { currentPeriod, nextValidation } = epoch
 
     return (
       <View style={styles.card}>
@@ -157,11 +178,11 @@ function Profile() {
           },
           {
             title: 'Next validation',
-            value:
-              currentPeriod &&
-              nextValidation &&
-              currentPeriod === EpochPeriod.None &&
-              `${new Date(nextValidation).toDateString()}`,
+            value: '',
+            // currentPeriod &&
+            // nextValidation &&
+            // currentPeriod === EpochPeriod.None &&
+            // `${new Date(nextValidation).toDateString()}`,
           },
           {
             title: 'Current task',
@@ -235,6 +256,7 @@ function Profile() {
             ].map(({ icon, title }, index) => (
               <TouchableOpacity
                 key={index}
+                onPress={() => handlePressButton(index)}
                 style={{ alignItems: 'center', width: 50 }}
               >
                 <View style={styles.menuImageItemContainer}>
