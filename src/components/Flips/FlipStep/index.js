@@ -1,7 +1,7 @@
 // Default imports
-import React, { Fragment } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-import { View, Text, Button, ActivityIndicator } from 'react-native'
+import { View, Text, Button } from 'react-native'
 
 import styles from './styles'
 
@@ -13,7 +13,6 @@ export default function FlipStep({
   onNext,
   onClose,
   children,
-  isLoading,
 }) {
   return (
     <View style={styles.container}>
@@ -23,13 +22,7 @@ export default function FlipStep({
         <Button onPress={onNext} title="Next" />
       </View>
 
-      {isLoading ? (
-        <View style={{ marginVertical: 25 }}>
-          <ActivityIndicator size="small" color="blue" />
-        </View>
-      ) : (
-        <View>{children}</View>
-      )}
+      <View>{children}</View>
     </View>
   )
 }
@@ -42,5 +35,4 @@ FlipStep.propTypes = {
   onNext: PropTypes.func,
   onPrev: PropTypes.func,
   onClose: PropTypes.func,
-  isLoading: PropTypes.bool,
 }

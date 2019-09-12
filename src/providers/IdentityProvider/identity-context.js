@@ -3,14 +3,28 @@ import PropTypes from 'prop-types'
 
 import { usePoll, useRpc } from '../../../lib'
 
+import { callRpc } from '../../../api'
+
 export const IdentityStateContext = createContext()
 export const IdentityDispatchContext = createContext()
 
 export default function IdentityProvider({ children }) {
-  const [state, setIdentity] = useState(null)
-  // const [{ result: identity }] = usePoll(useRpc('dna_identity', 1000 * 5))
+  const [identity, setIdentity] = useState(null)
+
+  useEffect(() => {
+    async function fetchIdentity() {
+      const { result } = await callRpc('dna_identity')
+      console.info(result)
+      if (result !== null) {
+        setIdentity(result)
+      }
+    }
+
+    fetchIdentity()
+  }, [])
+
   return (
-    <IdentityStateContext.Provider value={{}}>
+    <IdentityStateContext.Provider value={identity}>
       {children}
     </IdentityStateContext.Provider>
   )

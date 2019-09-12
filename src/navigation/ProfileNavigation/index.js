@@ -33,7 +33,11 @@ export default createStackNavigator(
     },
     Flip: {
       // eslint-disable-next-line react/display-name
-      screen: Flip,
+      screen: props => (
+        <Screen>
+          <Flip {...props} />
+        </Screen>
+      ),
       navigationOptions: {
         header: null,
       },

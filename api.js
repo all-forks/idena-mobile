@@ -1,7 +1,7 @@
 import reactotron from 'reactotron-react-native'
 import { URL } from './config'
 
-async function callRpc(method, ...params) {
+export async function callRpc(method, ...params) {
   try {
     const resp = await fetch(URL, {
       method: 'POST',
@@ -16,6 +16,7 @@ async function callRpc(method, ...params) {
       }),
     })
     const json = await resp.json()
+    console.info(json)
     return json
   } catch (error) {
     return { error }
