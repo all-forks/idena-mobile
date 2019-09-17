@@ -174,10 +174,8 @@ function Profile({ navigation }) {
             value:
               epoch &&
               epoch.nextValidation &&
-              epoch.currentPeriod ===
-                EpochPeriod.None`${new Date(
-                  epoch.nextValidation
-                ).toDateString()}`,
+              epoch.currentPeriod === EpochPeriod.None &&
+              `${new Date(epoch.nextValidation).toDateString()}`,
           },
           {
             title: 'Current task',
