@@ -15,8 +15,6 @@ import { Avatar, Button, Screen, Input } from '../../components'
 
 import { useInviteDispatch } from '../../providers'
 
-// import useIdentityState from '../../providers/IdentityProvider/identity-state'
-
 import { usePoll, useRpc } from '../../../lib'
 
 import { EpochPeriod } from '../../../validation'
@@ -36,7 +34,6 @@ function Profile({ navigation }) {
   const [balance, setBalance] = useState(0)
   const [inputValue, onChange] = useState('')
   const { activateInvite, status } = useInviteDispatch()
-  // const identity = useIdentityState()
 
   if (!identity) {
     return (
@@ -105,7 +102,9 @@ function Profile({ navigation }) {
 
     try {
       await activateInvite(inputValue, address)
-    } catch (error) {}
+    } catch (error) {
+      console.info(error)
+    }
   }
 
   const { state } = identity
@@ -149,9 +148,7 @@ function Profile({ navigation }) {
   }
 
   function renderBoard() {
-    const { stake, age, madeFlips, address } = identity
-
-    // const { currentPeriod, nextValidation } = epoch
+    const { age, madeFlips, address } = identity
 
     return (
       <View style={styles.card}>
@@ -161,16 +158,12 @@ function Profile({ navigation }) {
             value: state,
           },
           {
-            title: 'Identity ID',
+            title: 'Public Address',
             value: `${address}`,
           },
           {
-            title: 'Stake',
-            value: `${stake} DNA`,
-          },
-          {
             title: 'Balance',
-            value: balance,
+            value: `${balance} DNA`,
           },
           {
             title: 'Age',
@@ -178,11 +171,13 @@ function Profile({ navigation }) {
           },
           {
             title: 'Next validation',
-            value: '',
-            // currentPeriod &&
-            // nextValidation &&
-            // currentPeriod === EpochPeriod.None &&
-            // `${new Date(nextValidation).toDateString()}`,
+            value:
+              epoch &&
+              epoch.nextValidation &&
+              epoch.currentPeriod ===
+                EpochPeriod.None`${new Date(
+                  epoch.nextValidation
+                ).toDateString()}`,
           },
           {
             title: 'Current task',
@@ -196,7 +191,9 @@ function Profile({ navigation }) {
               numberOfLines={1}
               ellipsizeMode="head"
             >
-              {title === 'Identity ID' ? `${value.slice(0, 13)}...` : value}
+              {title === 'Public Address'
+                ? `${value.slice(0, 13)}...`
+                : value && value}
             </Text>
           </View>
         ))}
@@ -214,8 +211,6 @@ function Profile({ navigation }) {
   }
 
   function renderActivationForm() {
-    // alert(state)
-
     return (
       <View style={styles.formContainer}>
         <View style={styles.formHeader}>

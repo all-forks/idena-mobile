@@ -1,4 +1,5 @@
 // Default imports
+export { default as FlipGoogleSearch } from './FlipGoogleSearch'
 export { default as FlipStep } from './FlipStep'
 export { default as FlipStepper } from './FlipStepper'
 // eslint-disable-next-line import/no-cycle

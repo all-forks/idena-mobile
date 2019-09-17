@@ -9,4 +9,8 @@ export default StyleSheet.create({
     marginBottom: 1,
     backgroundColor: 'grey',
   },
+  flipImage: {
+    height: 125,
+    width: 150,
+  },
 })

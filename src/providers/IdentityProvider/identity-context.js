@@ -14,8 +14,8 @@ export default function IdentityProvider({ children }) {
   useEffect(() => {
     async function fetchIdentity() {
       const { result } = await callRpc('dna_identity')
-      console.info(result)
-      if (result !== null) {
+
+      if (result) {
         setIdentity(result)
       }
     }

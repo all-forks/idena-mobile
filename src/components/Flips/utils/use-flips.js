@@ -11,7 +11,9 @@ export default function useFlips() {
         if (savedFlips.length > 0) {
           setFlips(savedFlips)
         }
-      } catch (error) {}
+      } catch (error) {
+        console.info(error)
+      }
     }
 
     fetchDraftedFlips()

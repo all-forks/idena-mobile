@@ -193,7 +193,7 @@ function ValidationScreen() {
   const [{ result: epoch }] = useRpc('dna_epoch')
 
   const isShortSession =
-    epoch && epoch.currentPeriod === EpochPeriod.ShortSession
+   epoch && epoch.currentPeriod === EpochPeriod.ShortSession
 
   React.useEffect(() => {
     if (!ready && !shortAnswersSubmitted) {

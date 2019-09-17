@@ -1,15 +1,8 @@
 // Default imports
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Alert, View, SafeAreaView, StatusBar } from 'react-native'
-
-import {
-  FlipStep,
-  FlipStepper,
-  FlipHint,
-  FlipStory,
-  useFlips,
-} from '../../components'
+import { View, SafeAreaView, StatusBar } from 'react-native'
+import { FlipStep, FlipStepper, FlipHint, FlipStory } from '../../components'
 import randomHint from '../../utils/components/flip/flip'
 
 import { useIdentityState } from '../../providers'
@@ -19,11 +12,10 @@ import styles from './styles'
 function Flip({ navigation }) {
   console.disableYellowBox = true
   const [activeStep, setStep] = useState(0)
-  const { flips, deleteFlip, getDraft, saveDraft } = useFlips()
   const identity = useIdentityState()
 
   const [localFlip, setFlip] = useState({
-    pics: [],
+    pics: ['', '', '', ''],
     order: Array.from({ length: 4 }, (_, i) => i),
     hint: randomHint.getRandomHint(),
     choosenWordPairs: {},
@@ -34,15 +26,7 @@ function Flip({ navigation }) {
     if (!identity) {
       setLoading(true)
     } else {
-      const { flipKeyWordPairs } = identity
-
       setLoading(false)
-      console.info(flipKeyWordPairs)
-
-      // setFlip({
-      //   ...localFlip,
-      //   hint: flipKeyWordPairs,
-      // })
     }
   }, [identity, localFlip])
 
@@ -77,8 +61,6 @@ function Flip({ navigation }) {
   }
 */
 
-  // useEffect(() => {}, [saveDraft])
-
   const steps = [
     {
       title: 'Choose the hints',
@@ -94,7 +76,12 @@ function Flip({ navigation }) {
     },
     {
       title: 'Create story',
-      children: <FlipStory {...localFlip} />,
+      children: (
+        <FlipStory
+          {...localFlip}
+          onSubmit={pics => setFlip({ ...localFlip, pics })}
+        />
+      ),
     },
     {
       title: 'Shuffle',
@@ -111,11 +98,7 @@ function Flip({ navigation }) {
   }
 
   function onNextControl() {
-    alert('test')
     if (activeStep === steps.length - 1) return
-    if (activeStep === 0) {
-      // handleCheckDrafted()
-    }
 
     setStep(activeStep + 1)
   }

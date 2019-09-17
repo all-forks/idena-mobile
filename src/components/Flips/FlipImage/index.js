@@ -7,44 +7,44 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import styles from './styles'
 
 export default function FlipImage({
-  url,
+  src,
   isActiveImage,
   onPress,
   index,
   isLast,
 }) {
-  const typeChecking = [undefined, null, ''].includes(url)
-
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={() => onPress(index)}
-      style={[
-        styles.flipImageContainer,
-        index === 0 && { borderTopLeftRadius: 8, borderTopRightRadius: 8 },
-        isLast && {
-          marginBottom: 0,
-          borderBottomLeftRadius: 8,
-          borderBottomRightRadius: 8,
-        },
-        isActiveImage && { borderColor: 'blue', borderWidth: 1 },
-      ]}
-    >
-      {typeChecking ? (
-        <Icon name="camera-alt" size={20} color="#fff" />
-      ) : (
-        <Image
-          source={{ uri: url }}
-          resizeMode="cover"
-          style={styles.flipImage}
-        />
-      )}
-    </TouchableOpacity>
+    <>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => onPress(index)}
+        style={[
+          styles.flipImageContainer,
+          index === 0 && { borderTopLeftRadius: 8, borderTopRightRadius: 8 },
+          isLast && {
+            marginBottom: 0,
+            borderBottomLeftRadius: 8,
+            borderBottomRightRadius: 8,
+          },
+          isActiveImage && { borderColor: 'blue', borderWidth: 1 },
+        ]}
+      >
+        {src ? (
+          <Image
+            source={{ uri: src }}
+            resizeMode="cover"
+            style={styles.flipImage}
+          />
+        ) : (
+          <Icon name="camera-alt" size={20} color="#fff" />
+        )}
+      </TouchableOpacity>
+    </>
   )
 }
 
 FlipImage.propTypes = {
-  url: PropTypes.any,
+  src: PropTypes.any,
   isActiveImage: PropTypes.bool,
   onPress: PropTypes.func,
   index: PropTypes.number,
