@@ -13,7 +13,7 @@ import profileFlipAvatar from '../../assets/images/profile_flip_avatar.jpeg'
 
 import { Avatar, Button, Screen, Input } from '../../components'
 
-import { useInviteDispatch } from '../../providers'
+import { useInviteDispatch, useIdentityState } from '../../providers'
 
 import { usePoll, useRpc } from '../../../lib'
 
@@ -29,6 +29,8 @@ function Profile({ navigation }) {
   const [{ result: identity }] = usePoll(useRpc('dna_identity'), 1000 * 1)
   const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 10)
   const [{ result: accounts }] = usePoll(useRpc('account_list'), 1000 * 10)
+
+  const { canActivateInvite } = useIdentityState()
 
   const [width, setWidth] = useState(0)
   const [balance, setBalance] = useState(0)
@@ -260,7 +262,7 @@ function Profile({ navigation }) {
             ))}
           </View>
 
-          {state === IdentityStatus.Invite
+          {state === IdentityStatus.Invite && canActivateInvite
             ? renderActivationForm()
             : renderFlips()}
         </View>

@@ -1,8 +1,27 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import AsyncStorage from '@react-native-community/async-storage'
 
+export const FlipType = {
+  Published: 'published',
+  Draft: 'draft',
+  Archived: 'archived',
+}
+
 export default function useFlips() {
-  const [flips, setFlips] = useState([])
+  const [flips, setFlips] = useState([
+    {
+      id: 205,
+      type: 'published',
+    },
+    {
+      id: 2950,
+      type: 'draft',
+    },
+    {
+      id: 1712,
+      type: 'draft',
+    },
+  ])
 
   useEffect(() => {
     async function fetchDraftedFlips() {

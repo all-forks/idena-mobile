@@ -13,8 +13,10 @@ import FlipStepper from '../FlipStepper'
 export default function FlipHint({ onChange, hint, isLoading }) {
   const [activeIndex, setActiveIndex] = useState(0)
 
+  console.info(hint)
+
   // warn that current pair of renderer words  is last
-  const isLast = activeIndex === hint.length - 2
+  const isLast = activeIndex === hint.words.length - 2
 
   function handlePressMoreWords() {
     if (isLast) return
@@ -26,26 +28,32 @@ export default function FlipHint({ onChange, hint, isLoading }) {
       <FlipStepper activeStep={activeIndex} pair>
         {!isLoading ? (
           hint &&
-          hint.map(({ name, desc }, index) => (
-            <Fragment key={index}>
-              <TouchableOpacity
-                style={styles.wordPair}
-                onPress={() => onChange({ name, desc })}
-              >
-                <Text style={styles.title}>{name}</Text>
-                <Text style={styles.description}>{desc}</Text>
-              </TouchableOpacity>
+          hint.words &&
+          Object.values(hint.words)
+            .reduce((acc, curr) => acc.concat(curr), [])
+            .map(({ name, desc }, index) => (
+              <Fragment key={index}>
+                <TouchableOpacity
+                  style={styles.wordPair}
+                  onPress={() => onChange({ name, desc })}
+                >
+                  <Text style={styles.title}>{name}</Text>
+                  <Text style={styles.description}>{desc}</Text>
+                </TouchableOpacity>
 
-              {index % 2 === 0 && <DividerLine />}
-            </Fragment>
-          ))
+                {index % 2 === 0 && <DividerLine />}
+              </Fragment>
+            ))
         ) : (
           <ActivityIndicator size="small" color="blue" />
         )}
       </FlipStepper>
 
       <View style={{ marginVertical: 10 }}>
-        <Slider items={hint.length / 2} activePropsIndex={activeIndex} />
+        <Slider
+          items={Object.keys(hint.words).length}
+          activePropsIndex={activeIndex}
+        />
       </View>
 
       <View style={styles.buttonContainer}>
@@ -66,6 +74,6 @@ export default function FlipHint({ onChange, hint, isLoading }) {
 
 FlipHint.propTypes = {
   onChange: PropTypes.func,
-  hint: PropTypes.array,
+  hint: PropTypes.object,
   isLoading: PropTypes.bool,
 }

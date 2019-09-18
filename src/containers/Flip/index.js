@@ -2,7 +2,15 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { View, SafeAreaView, StatusBar } from 'react-native'
-import { FlipStep, FlipStepper, FlipHint, FlipStory } from '../../components'
+import {
+  FlipStep,
+  FlipStepper,
+  FlipHint,
+  FlipStory,
+  useFlips,
+} from '../../components'
+
+import { FlipType } from '../../components/Flips/utils/use-flips'
 import randomHint from '../../utils/components/flip/flip'
 
 import { useIdentityState } from '../../providers'
@@ -14,12 +22,28 @@ function Flip({ navigation }) {
   const [activeStep, setStep] = useState(0)
   const identity = useIdentityState()
 
+  const { flips } = useFlips()
+
+  const publishedFlips = flips.filter(({ type }) => type === FlipType.Published)
+
   const [localFlip, setFlip] = useState({
-    pics: ['', '', '', ''],
+    pics: [
+      'https://placehold.it/480?text=1',
+      'https://placehold.it/480?text=2',
+      'https://placehold.it/480?text=3',
+      'https://placehold.it/480?text=4',
+    ],
     order: Array.from({ length: 4 }, (_, i) => i),
-    hint: randomHint.getRandomHint(),
-    choosenWordPairs: {},
+    hint:
+      identity && identity.flipKeyWordPairs
+        ? randomHint.getNextKeyWordsHint(
+            identity.flipKeyWordPairs,
+            publishedFlips
+          )
+        : randomHint.getRandomHint(),
+    choosenWordPairs: null,
   })
+
   const [isLoading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -28,7 +52,7 @@ function Flip({ navigation }) {
     } else {
       setLoading(false)
     }
-  }, [identity, localFlip])
+  }, [identity, localFlip, publishedFlips])
 
   /**
   const handleCheckDrafted = () => {
@@ -61,6 +85,9 @@ function Flip({ navigation }) {
   }
 */
 
+  // const canPublish =
+  //   identity && localFlip.pics.every(hasDataUrl) && identity.canSubmitFlip
+
   const steps = [
     {
       title: 'Choose the hints',
@@ -79,7 +106,7 @@ function Flip({ navigation }) {
       children: (
         <FlipStory
           {...localFlip}
-          onSubmit={pics => setFlip({ ...localFlip, pics })}
+          onUpdateFlip={pics => setFlip({ ...localFlip, pics })}
         />
       ),
     },
@@ -99,6 +126,11 @@ function Flip({ navigation }) {
 
   function onNextControl() {
     if (activeStep === steps.length - 1) return
+
+    if (!localFlip.choosenWordPairs) {
+      alert('Choose pair')
+      return
+    }
 
     setStep(activeStep + 1)
   }
@@ -121,6 +153,7 @@ function Flip({ navigation }) {
             onPrev={onPrevControl}
             onNext={onNextControl}
             onClose={handleClose}
+            // allowSubmit={canPublish}
           >
             {children}
           </FlipStep>

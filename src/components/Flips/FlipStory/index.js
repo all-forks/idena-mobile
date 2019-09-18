@@ -4,43 +4,34 @@ import { View, Text, Image } from 'react-native'
 
 import FlipImage from '../FlipImage'
 import FlipGoogleSearch from '../FlipGoogleSearch'
+import { dataUrl } from '../../../utils'
 
 import styles from './styles'
-import Button from '../../Button'
 
 export default function FlipStory({
   pics,
   choosenWordPairs: { name, desc },
-  onSubmit,
+  onUpdateFlip,
 }) {
   const [isActiveImageIndex, setActiveImageIndex] = useState(0)
+  const [pickedUrl, setPickedUrl] = useState('')
   const [googleSearchWindow, setToggle] = useState({
     isOpened: false,
     currentIdx: 0,
   })
 
-  // useEffect(() => {
-  //   // const result = await fetch(
-  //   //   'https://www.googleapis.com/customsearch/v1?key=AIzaSyAC5JbFvQ14H4ExaOtpFYJ_pfnd26eiuz0&cx=017576662512468239146:omuauf_lfve&q=car'
-  //   // )
-  //   // const client = new GoogleImages(
-  //   //   '017512647261346726039:jct9zpubrlh',
-  //   //   'AIzaSyAC5JbFvQ14H4ExaOtpFYJ_pfnd26eiuz0'
-  //   // )
-  //   // client.search('lectures').then(resp => {
-  //   //   console.info('Response', resp)
-  //   // })
-  //   async function fetchImages() {
-  //     const resp = await fetch(
-  //       'https://www.googleapis.com/customsearch/v1?key=AIzaSyAC5JbFvQ14H4ExaOtpFYJ_pfnd26eiuz0&cx=017512647261346726039:jct9zpubrlh&q=car'
-  //     )
-  //     const response = await resp.json()
+  useEffect(() => {
+    if (pickedUrl) {
+      dataUrl.convertToBase64Url(pickedUrl, base64Url => {
+        onUpdateFlip([
+          ...pics.slice(0, isActiveImageIndex),
+          base64Url,
+          ...pics.slice(isActiveImageIndex + 1),
+        ])
+      })
+    }
+  }, [pickedUrl, isActiveImageIndex, onUpdateFlip, pics])
 
-  //     console.info(response.items[1].pagemap.cse_image[0].src)
-  //   }
-
-  //   fetchImages()
-  // }, [])
   const [images, setImages] = useState(pics)
 
   const { isOpened, currentIdx } = googleSearchWindow
@@ -50,31 +41,25 @@ export default function FlipStory({
 
     setToggle({ isOpened: true, currentIdx: idx })
 
-    const resp = await fetch(
-      'https://www.googleapis.com/customsearch/v1?key=AIzaSyAC5JbFvQ14H4ExaOtpFYJ_pfnd26eiuz0&cx=017512647261346726039:jct9zpubrlh&q=car'
-    )
-    const response = await resp.json()
-
-    console.info(response.items[1].pagemap.cse_image[0].src)
-
-    setImages(prevState => {
-      prevState[currentIdx] = response.items[1].pagemap.cse_image[0].src
-      return prevState
-    })
-
-    console.info(images)
-    onSubmit(images)
+    onUpdateFlip(images)
   }
 
   function handleEndSelection(selectedImageUrl) {
+    // eslint-disable-next-line no-shadow
+    setToggle(({ currentIdx }) => ({
+      isOpened: false,
+      currentIdx,
+    }))
+    setPickedUrl(selectedImageUrl)
     setImages(prevState => {
       prevState[currentIdx] = selectedImageUrl
       return prevState
     })
+    console.info(images)
   }
 
   return (
-    <View style >
+    <View>
       <View style={styles.flipStoryContainer}>
         <Text style={{ color: 'white', textAlign: 'center' }}>
           {name} / {desc}
@@ -90,20 +75,18 @@ export default function FlipStory({
           />
         ))}
       </View>
-      <FlipGoogleSearch
-        onSelect={selectedImageUrl => handleEndSelection(selectedImageUrl)}
-      />
-      {/* {isOpened && (
-        <>
-          <Button title="Select" onPress />
-        </>
-      )} */}
+      {isOpened && (
+        <FlipGoogleSearch
+          isOpened={isOpened}
+          onSelect={selectedImageUrl => handleEndSelection(selectedImageUrl)}
+        />
+      )}
     </View>
   )
 }
 
 FlipStory.propTypes = {
-  onSubmit: PropTypes.func,
+  onUpdateFlip: PropTypes.func,
   choosenWordPairs: PropTypes.object,
   pics: PropTypes.arrayOf(PropTypes.string),
 }

@@ -23,6 +23,7 @@
     "react-native-webview": "^7.0.5",
     "react-navigation": "^3.12.1",
     "rlp": "^2.2.3",
+    "rn-fetch-blob": "^0.10.16",
     "use-deep-compare-effect": "^1.2.0"
   },
   "devDependencies": {
