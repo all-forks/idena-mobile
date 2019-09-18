@@ -1,12 +1,13 @@
 // Default imports
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { View, SafeAreaView, StatusBar } from 'react-native'
+import { View, SafeAreaView } from 'react-native'
 import {
   FlipStep,
   FlipStepper,
   FlipHint,
   FlipStory,
+  FlipShuffle,
   useFlips,
 } from '../../components'
 
@@ -33,6 +34,7 @@ function Flip({ navigation }) {
       'https://placehold.it/480?text=3',
       'https://placehold.it/480?text=4',
     ],
+    nextOrder: [],
     order: Array.from({ length: 4 }, (_, i) => i),
     hint:
       identity && identity.flipKeyWordPairs
@@ -107,12 +109,13 @@ function Flip({ navigation }) {
         <FlipStory
           {...localFlip}
           onUpdateFlip={pics => setFlip({ ...localFlip, pics })}
+          onNextOrder={nextOrder => setFlip({ ...localFlip, nextOrder })}
         />
       ),
     },
     {
       title: 'Shuffle',
-      children: <View />,
+      children: <FlipShuffle {...localFlip} />,
     },
     {
       title: 'Flip',
@@ -142,7 +145,6 @@ function Flip({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="black" />
       <FlipStepper activeStep={activeStep}>
         {steps.map(({ title, children }, index) => (
           <FlipStep

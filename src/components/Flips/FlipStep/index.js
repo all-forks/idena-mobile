@@ -22,7 +22,7 @@ export default function FlipStep({
         <Button onPress={onNext} title="Next" />
       </View>
 
-      <View>{children}</View>
+      <View style={{ flex: 1 }}>{children}</View>
     </View>
   )
 }

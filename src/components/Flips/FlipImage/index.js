@@ -12,10 +12,14 @@ export default function FlipImage({
   onPress,
   index,
   isLast,
+  move,
+  moveEnd,
 }) {
   return (
     <>
       <TouchableOpacity
+        onLongPress={move}
+        onPressOut={moveEnd}
         activeOpacity={0.8}
         onPress={() => onPress(index)}
         style={[
@@ -26,7 +30,7 @@ export default function FlipImage({
             borderBottomLeftRadius: 8,
             borderBottomRightRadius: 8,
           },
-          isActiveImage && { borderColor: 'blue', borderWidth: 1 },
+          isActiveImage && { borderColor: 'blue', borderWidth: 5 },
         ]}
       >
         {src ? (
@@ -49,4 +53,6 @@ FlipImage.propTypes = {
   onPress: PropTypes.func,
   index: PropTypes.number,
   isLast: PropTypes.bool,
+  move: PropTypes.func,
+  moveEnd: PropTypes.func,
 }
