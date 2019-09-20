@@ -115,7 +115,12 @@ function Flip({ navigation }) {
     },
     {
       title: 'Shuffle',
-      children: <FlipShuffle {...localFlip} />,
+      children: (
+        <FlipShuffle
+          {...localFlip}
+          onShuffleFlip={nextOrder => setFlip({ ...localFlip, nextOrder })}
+        />
+      ),
     },
     {
       title: 'Flip',

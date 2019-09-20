@@ -90,9 +90,10 @@ export default function FlipStory({
                 res.push(i)
               }
             })
+            console.info(data, res)
             onNextOrder(res)
-            console.info(res)
             setImages(data)
+            onUpdateFlip(data)
           }}
         />
       </View>
