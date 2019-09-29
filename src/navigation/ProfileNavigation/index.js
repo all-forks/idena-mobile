@@ -7,7 +7,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { Screen } from '../../components'
-import { Profile, Flip } from '../../containers'
+import { Profile, Flip, Drafts } from '../../containers'
 
 export default createStackNavigator(
   {
@@ -42,6 +42,14 @@ export default createStackNavigator(
         header: null,
       },
     },
+    Drafts: {
+      // eslint-disable-next-line react/display-name
+      screen: props => (
+        <Screen>
+          <Drafts {...props} />
+        </Screen>
+      ),
+    },
   },
   {
     navigationOptions: ({ navigation }) => ({
@@ -50,7 +58,7 @@ export default createStackNavigator(
       ].includes('Flip'),
     }),
     cardStyle: {
-      backgroundColor: 'white',
+      backgroundColor: 'black',
     },
     transitionConfig: (transitionProps, prevTransitionProps) => {
       const isModal =

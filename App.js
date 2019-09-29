@@ -19,6 +19,7 @@ import {
 
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import { createBottomTabNavigator, createAppContainer } from 'react-navigation'
 import { useRpc, useInterval, useTimeout, usePoll } from './lib'
 
 import ProfileNavigation from './src/navigation/ProfileNavigation'
@@ -193,7 +194,7 @@ function ValidationScreen() {
   const [{ result: epoch }] = useRpc('dna_epoch')
 
   const isShortSession =
-   epoch && epoch.currentPeriod === EpochPeriod.ShortSession
+    epoch && epoch.currentPeriod === EpochPeriod.ShortSession
 
   React.useEffect(() => {
     if (!ready && !shortAnswersSubmitted) {
@@ -456,74 +457,91 @@ function Timer({ type }) {
   )
 }
 
-/* eslint-disable */
+function Home() {
+  return (
+    <Screen>
+      <Profile />
+      <BeforeValidation />
+    </Screen>
+  )
+}
 
-import { createBottomTabNavigator, createAppContainer } from 'react-navigation'
+function Contacts() {
+  return (
+    <Screen>
+      <Text style={{ color: 'white' }}>Contacts</Text>
+    </Screen>
+  )
+}
+
+function Chats() {
+  return (
+    <Screen>
+      <Text style={{ color: 'white' }}>Chats</Text>
+    </Screen>
+  )
+}
+
+function Validation() {
+  return (
+    <Screen>
+      <ValidationProvider>
+        <ValidationScreen />
+      </ValidationProvider>
+    </Screen>
+  )
+}
+function renderTabBarIcon(tintColor, state) {
+  const { routeName } = state
+  const IconComponent = Icon
+  let iconName
+
+  switch (routeName) {
+    case 'Home':
+      iconName = 'home'
+      break
+    case 'Contacts':
+      iconName = 'contacts'
+      break
+    case 'Wallets':
+      iconName = 'account-balance-wallet'
+      break
+    case 'Chats':
+      iconName = 'chat'
+      break
+    case 'Validation':
+      iconName = 'check'
+      break
+    case 'Profile':
+      iconName = 'person'
+      break
+    default:
+      break
+  }
+
+  return <IconComponent name={iconName} size={25} color={tintColor} />
+}
 
 const MainNavigator = createBottomTabNavigator(
   {
     Home: {
-      screen: () => (
-        <Screen>
-          <Profile />
-          <BeforeValidation />
-        </Screen>
-      ),
+      screen: Home,
     },
-    Contacts: () => (
-      <Screen>
-        <Text style={{ color: 'white' }}>Contacts</Text>
-      </Screen>
-    ),
-    Chats: () => (
-      <Screen>
-        <Text style={{ color: 'white' }}>Chats</Text>
-      </Screen>
-    ),
+    Contacts: {
+      screen: Contacts,
+    },
+    Chats: {
+      screen: Chats,
+    },
     Validation: {
-      screen: () => (
-        <Screen>
-          <ValidationProvider>
-            <ValidationScreen />
-          </ValidationProvider>
-        </Screen>
-      ),
+      screen: Validation,
     },
-    Profile: ProfileNavigation
+    Profile: ProfileNavigation,
   },
   {
     initialRouteName: 'Profile',
     defaultNavigationOptions: ({ navigation: { state } }) => ({
-      tabBarIcon: ({ tintColor }) => {
-        const { routeName } = state
-        const IconComponent = Icon
-        let iconName
-
-        switch (routeName) {
-          case 'Home':
-            iconName = 'home'
-            break
-          case 'Contacts':
-            iconName = 'contacts'
-            break
-          case 'Wallets':
-            iconName = 'account-balance-wallet'
-            break
-          case 'Chats':
-            iconName = 'chat'
-            break
-          case 'Validation':
-            iconName = 'check'
-            break
-          case 'Profile':
-            iconName = 'person'
-            break
-          default:
-            break
-        }
-
-        return <IconComponent name={iconName} size={25} color={tintColor} />
-      },
+      tabBarIcon: ({ tintColor }) => renderTabBarIcon(tintColor, state),
     }),
     tabBarOptions: {
       activeTintColor: 'rgb(87,143,255)',

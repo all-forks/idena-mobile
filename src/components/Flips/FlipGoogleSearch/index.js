@@ -20,7 +20,7 @@ export default function FlipGoogleSearch({ onSelect, isOpened }) {
 
   const height = heightS.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0%', '115%'],
+    outputRange: ['0%', '120%'],
   })
 
   return (
@@ -46,6 +46,8 @@ export default function FlipGoogleSearch({ onSelect, isOpened }) {
           borderTopLeftRadius: 8,
           borderTopRightRadius: 8,
         }}
+        overScrollMode="content"
+        scrollEnabled={false}
       />
     </Animated.View>
   )

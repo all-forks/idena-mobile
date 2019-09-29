@@ -10,7 +10,7 @@ export const FlipType = {
 export default function useFlips() {
   const [flips, setFlips] = useState([
     {
-      id: 205,
+      id: 1,
       type: 'published',
     },
     {

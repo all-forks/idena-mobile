@@ -1,79 +1,102 @@
-import React, { useState, Fragment } from 'react'
+import React, { useRef, useEffect, useState, Fragment } from 'react'
 import PropTypes from 'prop-types'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Dimensions } from 'react-native'
 
-import { ActivityIndicator } from 'react-native-paper'
+import Carousel from 'react-native-snap-carousel'
+
 import Button from '../../Button'
-import DividerLine from '../../DividerLine'
-import Slider from '../../Slider'
 
 import styles from './styles'
-import FlipStepper from '../FlipStepper'
 
 export default function FlipHint({ onChange, hint, isLoading }) {
-  const [activeIndex, setActiveIndex] = useState(0)
-
+  // eslint-disable-next-line no-unused-vars
+  let carouselRef = useRef()
   console.info(hint)
 
-  // warn that current pair of renderer words  is last
-  const isLast = activeIndex === hint.words.length - 2
-
   function handlePressMoreWords() {
-    if (isLast) return
-    setActiveIndex(activeIndex + 2)
+    if (carouselRef.currentIndex === hint.length - 1) {
+      carouselRef.snapToItem(0)
+    } else {
+      carouselRef.snapToNext()
+    }
+  }
+
+  // useEffect(() => {
+  //    setHint(hint)
+  // },[hint])
+
+  function _renderItem({ item, idx }) {
+    return (
+      <View key={idx} style={styles.itemContainer}>
+        {Array.isArray(item) &&
+          item.map(({ name, desc }, i) => (
+            <Fragment key={i}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={[
+                  styles.wordPair,
+                  i === 0 ? styles.topRadius : styles.bottomRadius,
+                ]}
+                onPress={() => {
+                  console.info(item[0].name)
+                  onChange({
+                    name: `${item[0].name}/${item[1].name}`,
+                    desc: `${item[0].desc}/${item[1].desc}`,
+                  })
+                }}
+              >
+                <Text style={styles.title}>{name}</Text>
+                <Text style={styles.description}>{desc}</Text>
+              </TouchableOpacity>
+            </Fragment>
+          ))}
+      </View>
+    )
   }
 
   return (
-    <View style={{ paddingHorizontal: 24, height: '100%' }}>
-      <FlipStepper activeStep={activeIndex} pair>
+    <>
+      <View style={{ paddingHorizontal: 40 }}>
+        <Text style={styles.exampleTitle}>
+          Before > Something happens > After
+        </Text>
+      </View>
+
+      <View style={styles.carouselContainer}>
         {!isLoading ? (
-          hint &&
-          hint.words &&
-          Object.values(hint.words)
-            .reduce((acc, curr) => acc.concat(curr), [])
-            .map(({ name, desc }, index) => (
-              <Fragment key={index}>
-                <TouchableOpacity
-                  style={styles.wordPair}
-                  onPress={() => onChange({ name, desc })}
-                >
-                  <Text style={styles.title}>{name}</Text>
-                  <Text style={styles.description}>{desc}</Text>
-                </TouchableOpacity>
-
-                {index % 2 === 0 && <DividerLine />}
-              </Fragment>
-            ))
+          <Carousel
+            ref={c => {
+              carouselRef = c
+            }}
+            activeSlideOffset={5}
+            callbackOffsetMargin={0}
+            layoutCardOffset={0}
+            inactiveSlideOpacity={1}
+            inactiveSlideScale={0.8}
+            data={hint}
+            renderItem={_renderItem}
+            sliderWidth={Dimensions.get('window').width}
+            itemWidth={Dimensions.get('window').width - 80}
+            sliderHeight={250}
+          />
         ) : (
-          <ActivityIndicator size="small" color="blue" />
+          <Text>...Loading</Text>
         )}
-      </FlipStepper>
-
-      <View style={{ marginVertical: 10 }}>
-        <Slider
-          items={Object.keys(hint.words).length}
-          activePropsIndex={activeIndex}
-        />
       </View>
 
       <View style={styles.buttonContainer}>
         <Button
-          title="More words"
+          title="Change words"
           onPress={handlePressMoreWords}
-          style={[
-            styles.button,
-            isLast && {
-              backgroundColor: 'transparent',
-            },
-          ]}
+          style={styles.button}
         />
       </View>
-    </View>
+    </>
   )
 }
 
 FlipHint.propTypes = {
   onChange: PropTypes.func,
-  hint: PropTypes.object,
+  hint: PropTypes.array,
   isLoading: PropTypes.bool,
 }

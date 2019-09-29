@@ -6,5 +6,6 @@ export { default as FlipStepper } from './FlipStepper'
 export { default as FlipHint } from './FlipHint'
 export { default as FlipStory } from './FlipStory'
 export { default as FlipShuffle } from './FlipShuffle'
+export { default as FlipSubmit } from './FlipSubmit'
 
 export * from './utils'

@@ -6,6 +6,7 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from 'react-native'
+import PropTypes from 'prop-types'
 
 import { Card } from 'react-native-paper'
 import Icon from 'react-native-vector-icons/MaterialIcons'
@@ -109,6 +110,11 @@ function Profile({ navigation }) {
     }
   }
 
+  function handleNavigateToDrafts() {
+    // const { navigation } = navigation
+    navigation.navigate('Drafts')
+  }
+
   const { state } = identity
 
   function renderHeader() {
@@ -128,6 +134,7 @@ function Profile({ navigation }) {
 
         <TouchableOpacity
           activeOpacity={0.8}
+          onPress={handleNavigateToDrafts}
           style={[styles.flipItem, { width }]}
         >
           <ImageBackground
@@ -138,7 +145,7 @@ function Profile({ navigation }) {
           >
             <View style={{ padding: 10 }}>
               <Icon name="play-arrow" color="white" size={20} />
-              <Text style={styles.flipTitle}>Samples</Text>
+              <Text style={styles.flipTitle}>Drafts</Text>
               <Text style={styles.flipText}>
                 Total {totalQualifiedFlips} flips
               </Text>
@@ -269,6 +276,10 @@ function Profile({ navigation }) {
       </ScrollView>
     </Screen>
   )
+}
+
+Profile.propTypes = {
+  navigation: PropTypes.any,
 }
 
 export default Profile

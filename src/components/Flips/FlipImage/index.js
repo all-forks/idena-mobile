@@ -37,7 +37,17 @@ export default function FlipImage({
           <Image
             source={{ uri: src }}
             resizeMode="cover"
-            style={styles.flipImage}
+            style={[
+              styles.flipImage,
+              index === 0 && {
+                borderTopLeftRadius: 8,
+                borderTopRightRadius: 8,
+              },
+              isLast && {
+                borderBottomLeftRadius: 8,
+                borderBottomRightRadius: 8,
+              },
+            ]}
           />
         ) : (
           <Icon name="camera-alt" size={20} color="#fff" />

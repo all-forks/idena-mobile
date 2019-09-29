@@ -16,7 +16,6 @@ export async function callRpc(method, ...params) {
       }),
     })
     const json = await resp.json()
-    console.info(json)
     return json
   } catch (error) {
     return { error }
