@@ -2,13 +2,22 @@
  * @format
  */
 
-import { AppRegistry } from 'react-native'
+import { AppRegistry, SafeAreaView } from 'react-native'
+import React from 'react'
 import Reactotron from 'reactotron-react-native'
 
 import App from './App'
 import { name as appName } from './app.json'
 
 global.Buffer = require('buffer/').Buffer
+
+function WrappedApp() {
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <App />
+    </SafeAreaView>
+  )
+}
 
 // eslint-disable-next-line no-undef
 if (__DEV__) {
@@ -17,4 +26,4 @@ if (__DEV__) {
     .connect() // let's connect!
   console.log('Reactotron Configured')
 }
-AppRegistry.registerComponent(appName, () => App)
+AppRegistry.registerComponent(appName, () => WrappedApp)

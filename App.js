@@ -19,7 +19,11 @@ import {
 
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import { createBottomTabNavigator, createAppContainer } from 'react-navigation'
+import {
+  createSwitchNavigator,
+  createAppContainer,
+  createStackNavigator,
+} from 'react-navigation'
 import { useRpc, useInterval, useTimeout, usePoll } from './lib'
 
 import ProfileNavigation from './src/navigation/ProfileNavigation'
@@ -522,31 +526,51 @@ function renderTabBarIcon(tintColor, state) {
   return <IconComponent name={iconName} size={25} color={tintColor} />
 }
 
-const MainNavigator = createBottomTabNavigator(
+// const MainNavigator = createBottomTabNavigator(
+//   {
+//     Home: {
+//       screen: Home,
+//     },
+//     Contacts: {
+//       screen: Contacts,
+//     },
+//     Chats: {
+//       screen: Chats,
+//     },
+//     Validation: {
+//       screen: Validation,
+//     },
+//     Profile: ProfileNavigation,
+//   },
+//   {
+//     initialRouteName: 'Profile',
+//     defaultNavigationOptions: ({ navigation: { state } }) => ({
+//       tabBarIcon: ({ tintColor }) => renderTabBarIcon(tintColor, state),
+//     }),
+//     tabBarOptions: {
+//       activeTintColor: 'rgb(87,143,255)',
+//       inactiveTintColor: 'rgb(210,212,217)',
+//     },
+//   }
+// )
+
+const AuthNavigator = createStackNavigator({
+  Import: {
+    screen: () => (
+      <View>
+        <Text>3232</Text>
+      </View>
+    ),
+  },
+})
+
+const MainNavigator = createSwitchNavigator(
   {
-    Home: {
-      screen: Home,
-    },
-    Contacts: {
-      screen: Contacts,
-    },
-    Chats: {
-      screen: Chats,
-    },
-    Validation: {
-      screen: Validation,
-    },
-    Profile: ProfileNavigation,
+    Auth: AuthNavigator,
+    App: ProfileNavigation,
   },
   {
-    initialRouteName: 'Profile',
-    defaultNavigationOptions: ({ navigation: { state } }) => ({
-      tabBarIcon: ({ tintColor }) => renderTabBarIcon(tintColor, state),
-    }),
-    tabBarOptions: {
-      activeTintColor: 'rgb(87,143,255)',
-      inactiveTintColor: 'rgb(210,212,217)',
-    },
+    initialRouteName: 'App',
   }
 )
 

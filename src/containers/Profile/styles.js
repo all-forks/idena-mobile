@@ -2,23 +2,65 @@ import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
   container: {
-    paddingHorizontal: 28,
+    paddingHorizontal: 48,
   },
   header: {
     alignItems: 'center',
   },
   name: {
-    color: 'rgb(89,89,89)',
-    fontSize: 18,
+    marginTop: 20,
+    marginBottom: 5,
+    color: 'rgb(83,86,92)',
+    fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  nickname: {
-    color: 'rgb(149,149,149)',
+  address: {
+    color: 'rgb(87,143,255)',
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: 'center',
   },
+  gray: {
+    color: 'rgb(150,153,158)',
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  qrCodeBorder: {
+    borderRadius: 8,
+    padding: 5,
+    borderWidth: 0.5,
+    borderColor: 'gray',
+  },
+  actionInfoContainer: {
+    marginTop: 56,
+    marginBottom: 24,
+  },
+  nextValidationRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    // color: '',
+  },
+  time: {
+    color: 'rgb(83,86,92)',
+    fontSize: 16,
+  },
+  currentTasksContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgb(245,246,247)',
+    borderRadius: 16,
+    marginTop: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 38,
+  },
+  currentTaskTitle: {
+    color: 'rgb(83,86,92)',
+    fontSize: 16,
+  },
   userAvatarContainer: {
-    marginTop: 25,
+    marginTop: 8,
     borderRadius: 30,
   },
   mainButtons: {
@@ -41,12 +83,12 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
   flipsContainer: {
-    marginVertical: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   flipItem: {
     justifyContent: 'flex-end',
+    flex: 0.3,
     backgroundColor: 'rgb(87, 143, 255)',
     borderRadius: 16,
     height: 175,
@@ -79,10 +121,9 @@ export default StyleSheet.create({
     color: 'rgb(150, 153, 158)',
   },
   card: {
+    marginTop: 21,
     marginBottom: 25,
     padding: 20,
-    backgroundColor: 'rgb(245, 246, 247)',
-    borderRadius: 16,
   },
   profileInfoRow: {
     flexDirection: 'row',
@@ -90,18 +131,29 @@ export default StyleSheet.create({
     paddingVertical: 10,
   },
   profileInfoRowTitle: {
-    color: 'rgb(83, 86, 92)',
-    fontSize: 15,
+    color: 'rgb(150,153,158)',
+    fontSize: 16,
+    fontWeight: '600',
   },
   profileInfoRowValue: {
     color: 'rgb(83, 86, 92)',
     fontWeight: 'bold',
     fontSize: 15,
   },
+  modal: {
+    backgroundColor: '#fff',
+    paddingTop: 44,
+    paddingBottom: 16,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
   sectionContainer: {
     flex: 1,
     marginTop: 32,
     marginHorizontal: 24,
     padding: 24,
+  },
+  buttons: {
+    flexDirection: 'row',
   },
 })

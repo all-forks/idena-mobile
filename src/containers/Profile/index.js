@@ -5,10 +5,14 @@ import {
   ScrollView,
   ImageBackground,
   TouchableOpacity,
+  Clipboard,
+  Linking,
 } from 'react-native'
+import Modal from 'react-native-modal'
 import PropTypes from 'prop-types'
 
 import { Card } from 'react-native-paper'
+import QRCode from 'react-native-qrcode-svg'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import profileFlipAvatar from '../../assets/images/profile_flip_avatar.jpeg'
 
@@ -27,6 +31,7 @@ import { IdentityStatus } from '../../utils'
 import styles from './styles'
 
 function Profile({ navigation }) {
+  console.disableYellowBox = true
   const [{ result: identity }] = usePoll(useRpc('dna_identity'), 1000 * 1)
   const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 10)
   const [{ result: accounts }] = usePoll(useRpc('account_list'), 1000 * 10)
@@ -35,6 +40,7 @@ function Profile({ navigation }) {
 
   const [width, setWidth] = useState(0)
   const [balance, setBalance] = useState(0)
+  const [isVisible, setToggleVisible] = useState(true)
   const [inputValue, onChange] = useState('')
   const { activateInvite, status } = useInviteDispatch()
 
@@ -45,6 +51,8 @@ function Profile({ navigation }) {
       </Card>
     )
   }
+
+  const { address } = identity
 
   function fetchBalance() {
     if (accounts) {
@@ -62,25 +70,8 @@ function Profile({ navigation }) {
     }
   }
 
-  function handlePressButton(index) {
-    switch (index) {
-      case 0: {
-        break
-      }
-
-      case 1: {
-        break
-      }
-
-      case 2: {
-        navigation.navigate('Flip')
-        break
-      }
-
-      default: {
-        break
-      }
-    }
+  function handleCreateNewFlip() {
+    navigation.navigate('Flip')
   }
 
   if (accounts) {
@@ -92,7 +83,6 @@ function Profile({ navigation }) {
   }
 
   async function handlePress() {
-    const { address } = identity
 
     if (
       identity === '' ||
@@ -115,27 +105,34 @@ function Profile({ navigation }) {
     navigation.navigate('Drafts')
   }
 
+  function handleOpenInBrowser() {
+    Linking.openURL(`https://scan.idena.io/address?address=${address}`).catch(
+      error => console.info(error)
+    )
+  }
+
   const { state } = identity
 
   function renderHeader() {
-    const { totalQualifiedFlips } = identity
+    const { totalQualifiedFlips, state } = identity
 
-    return (
+    return [IdentityStatus.Verified, IdentityStatus.Newbie].includes(state) ? (
       <View style={styles.flipsContainer}>
         <TouchableOpacity
           activeOpacity={0.8}
           style={[styles.flipItem, { width, padding: 10 }]}
+          onPress={handleCreateNewFlip}
         >
           <View>
             <Icon name="play-arrow" color="white" size={20} />
-            <Text style={styles.flipTitle}>Run flips</Text>
+            <Text style={styles.flipTitle}>New flip</Text>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleNavigateToDrafts}
-          style={[styles.flipItem, { width }]}
+          style={[styles.flipItem, { width, flex: 0.67 }]}
         >
           <ImageBackground
             source={profileFlipAvatar}
@@ -144,16 +141,15 @@ function Profile({ navigation }) {
             style={styles.flipImage}
           >
             <View style={{ padding: 10 }}>
-              <Icon name="play-arrow" color="white" size={20} />
-              <Text style={styles.flipTitle}>Drafts</Text>
-              <Text style={styles.flipText}>
-                Total {totalQualifiedFlips} flips
+              <Text style={styles.flipTitle}>
+                {totalQualifiedFlips === 1 ? 'Draft' : 'Drafts'}
               </Text>
+              <Text style={styles.flipText}>{totalQualifiedFlips} flips</Text>
             </View>
           </ImageBackground>
         </TouchableOpacity>
       </View>
-    )
+    ) : null
   }
 
   function renderBoard() {
@@ -167,24 +163,16 @@ function Profile({ navigation }) {
             value: state,
           },
           {
-            title: 'Public Address',
-            value: `${address}`,
-          },
-          {
             title: 'Balance',
             value: `${balance} DNA`,
           },
           {
-            title: 'Age',
-            value: `${age} epoches`,
+            title: 'Total Score',
+            value: '0%',
           },
           {
-            title: 'Next validation',
-            value:
-              epoch &&
-              epoch.nextValidation &&
-              epoch.currentPeriod === EpochPeriod.None &&
-              `${new Date(epoch.nextValidation).toDateString()}`,
+            title: 'Age',
+            value: `${age} ${parseInt(age) === 1 ? 'epoch' : 'epochs'}`,
           },
           {
             title: 'Current task',
@@ -217,6 +205,10 @@ function Profile({ navigation }) {
     )
   }
 
+  function handleCopyAddress(address) {
+    Clipboard.setString(address)
+  }
+
   function renderActivationForm() {
     return (
       <View style={styles.formContainer}>
@@ -235,38 +227,40 @@ function Profile({ navigation }) {
     )
   }
 
-  const { name, nickname, avatar } = identity
+  const { name, avatar, madeFlips, online } = identity
 
   return (
     <Screen>
       <ScrollView onLayout={handleLayout} style={styles.container}>
         <View>
           <View style={styles.header}>
-            <Text style={styles.name}>{name}</Text>
-            <Text style={styles.nickname}>{nickname}</Text>
-
             <View style={styles.userAvatarContainer}>
-              <Avatar source={{ uri: avatar }} size={150} />
+              <Avatar source={{ uri: avatar }} size={96} online={online} />
+            </View>
+
+            <Text style={styles.name}>{name}</Text>
+
+            <View style={{ paddingHorizontal: 48 }}>
+              <Text style={styles.address}>{address}</Text>
             </View>
           </View>
 
-          <View style={styles.mainButtons}>
-            {[
-              { icon: 'account-balance', title: 'Share' },
-              { icon: 'account-balance', title: 'Invite' },
-              { icon: 'account-balance', title: 'Flip' },
-            ].map(({ icon, title }, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handlePressButton(index)}
-                style={{ alignItems: 'center', width: 50 }}
-              >
-                <View style={styles.menuImageItemContainer}>
-                  <Icon name={icon} size={30} color="rgb(87, 143, 255)" />
-                </View>
-                <Text style={styles.menuItem}>{title}</Text>
-              </TouchableOpacity>
-            ))}
+          <View style={styles.actionInfoContainer}>
+            <View style={styles.nextValidationRow}>
+              <Text style={styles.profileInfoRowTitle}>Next Validation</Text>
+              <Text style={styles.time}>
+                {epoch &&
+                  epoch.nextValidation &&
+                  epoch.currentPeriod === EpochPeriod.None &&
+                  `${new Date(epoch.nextValidation).toDateString()}`}
+              </Text>
+            </View>
+
+            <View style={styles.currentTasksContainer}>
+              <Text style={styles.currentTaskTitle}>
+                Current task: {madeFlips} flips
+              </Text>
+            </View>
           </View>
 
           {state === IdentityStatus.Invite && canActivateInvite
@@ -274,6 +268,39 @@ function Profile({ navigation }) {
             : renderFlips()}
         </View>
       </ScrollView>
+
+      <Modal
+        isVisible={isVisible}
+        style={{ justifyContent: 'flex-end' }}
+        onBackdropPress={() => {
+          setToggleVisible(!isVisible)
+        }}
+      >
+        <View style={styles.modal}>
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <View style={styles.qrCodeBorder}>
+              <QRCode value={address} size={110} />
+              <Text style={[styles.address, styles.gray]}>{address}</Text>
+
+              <View style={styles.buttons}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => handleCopyAddress(address)}
+                >
+                  <Text>Copy Address</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={handleOpenInBrowser}
+                >
+                  <Text>Open in browser</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </Screen>
   )
 }

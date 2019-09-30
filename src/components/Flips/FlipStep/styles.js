@@ -45,6 +45,13 @@ export default StyleSheet.create({
     color: 'rgb(83, 86, 92)',
     textAlign: 'center',
   },
+  modal: {
+    backgroundColor: '#fff',
+    paddingTop: 44,
+    paddingBottom: 16,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

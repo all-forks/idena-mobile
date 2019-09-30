@@ -19,16 +19,12 @@ export default createStackNavigator(
         </Screen>
       ),
       navigationOptions: {
+        header: null,
         headerStyle: {
           marginHorizontal: 16,
           borderBottomWidth: 0,
           backgroundColor: 'white',
         },
-        headerRight: (
-          <View>
-            <Icon name="sort" size={20} color="rgb(87,143,255)" />
-          </View>
-        ),
       },
     },
     Flip: {
