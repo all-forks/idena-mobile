@@ -15,8 +15,11 @@ export async function callRpc(method, ...params) {
         id: 1,
       }),
     })
-    const json = await resp.json()
-    return json
+    if (resp.ok) {
+      const json = await resp.json()
+      return json
+    }
+    return { error: 'Network Request Failed' }
   } catch (error) {
     return { error }
   }
@@ -68,11 +71,15 @@ export async function activateInviteCode(key, address) {
 }
 
 export async function fetchChain() {
-  const { result, error } = await callRpc('bcn_syncing')
+  try {
+    const { result, error } = await callRpc('bcn_syncing')
+    // console.info('bcn_syncing', result)
+    if (error) {
+      return error
+    }
 
-  if (error) {
+    return result
+  } catch (error) {
     return error
   }
-
-  return result
 }

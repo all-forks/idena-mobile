@@ -2,11 +2,14 @@ import React, { useEffect, useReducer, createContext } from 'react'
 
 import { usePoll, useRpc, useInterval } from '../../../lib'
 
-import { fetchNodeState } from '../../api'
+import { callRpc } from '../../../api'
 
 const FETCH_SYNC_REQUEST = 'FETCH_SYNC_REQUEST'
 const FETCH_SYNC_SUCCESS = 'FETCH_SYNC_SUCCESS'
 const FETCH_SYNC_FAILED = 'FETCH_SYNC_FAILED'
+
+export const ChainStateContext = createContext()
+const { Provider } = ChainStateContext
 
 const initialState = {
   offline: null,
@@ -14,7 +17,6 @@ const initialState = {
   currentBlock: null,
   highestBlock: null,
   progress: null,
-  isFetching: false,
 }
 
 function chainReducer(state, action) {
@@ -22,7 +24,8 @@ function chainReducer(state, action) {
     case FETCH_SYNC_REQUEST: {
       return {
         ...state,
-        isFetching: true,
+        offline: true,
+        syncing: false,
       }
     }
     case FETCH_SYNC_SUCCESS: {
@@ -40,7 +43,6 @@ function chainReducer(state, action) {
         ...state,
         syncing: false,
         offline: true,
-        isFetching: false,
       }
     }
     default: {
@@ -49,17 +51,37 @@ function chainReducer(state, action) {
   }
 }
 
-function ChainProvider({ children }) {
+// eslint-disable-next-line react/prop-types
+export default function ChainProvider({ children }) {
   const [state, dispatch] = useReducer(chainReducer, initialState)
 
-  useEffect()
+  function fetchSuccess(sync) {
+    console.info('Dispatch success', sync)
+    dispatch({ type: FETCH_SYNC_SUCCESS, payload: sync })
+  }
 
-  useInterval(async () => {
-    try {
-      const sync = await fetchNodeState()
-      dispatch({ type: FETCH_SYNC_SUCCESS, payload: sync })
-    } catch (error) {
-      dispatch({ type: FETCH_SYNC_FAILED })
-    }
-  })
+  function fetchFailed() {
+    console.info('Dispatch failed')
+    dispatch({ type: FETCH_SYNC_FAILED })
+  }
+
+  useInterval(
+    async () => {
+      try {
+        const { result, error } = await callRpc('bcn_syncing')
+        // eslint-disable-next-line valid-typeof
+        if (error) {
+          fetchFailed()
+        } else {
+          fetchSuccess(result)
+        }
+      } catch (error) {
+        fetchFailed()
+      }
+    },
+    !state.offline && state.syncing ? 1000 * 1 : 5000 * 1,
+    true
+  )
+
+  return <Provider value={state}>{children}</Provider>
 }

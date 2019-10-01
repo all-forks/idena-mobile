@@ -1,7 +1,6 @@
 import { fetchChain } from '../../../api'
 
-export default async function() {
-  const { result } = await fetchChain()
-  console.info(result)
+export default async function fetchNodeStatus() {
+  const result = fetchChain()
   return result
 }

@@ -57,7 +57,11 @@ import {
   TimingProvider,
 } from './epoch'
 
-import { InviteProvider, IdentityProvider } from './src/providers'
+import {
+  InviteProvider,
+  IdentityProvider,
+  ChainProvider,
+} from './src/providers'
 
 import { EXTRA_FLIPS_DELAY } from './config'
 
@@ -89,7 +93,9 @@ export function AppProviders({ children }) {
     <TimingProvider>
       <EpochProvider>
         <IdentityProvider>
-          <InviteProvider>{children}</InviteProvider>
+          <InviteProvider>
+            <ChainProvider>{children}</ChainProvider>
+          </InviteProvider>
         </IdentityProvider>
       </EpochProvider>
     </TimingProvider>

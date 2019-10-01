@@ -18,7 +18,11 @@ import profileFlipAvatar from '../../assets/images/profile_flip_avatar.jpeg'
 
 import { Avatar, Button, Screen, Input } from '../../components'
 
-import { useInviteDispatch, useIdentityState } from '../../providers'
+import {
+  useInviteDispatch,
+  useIdentityState,
+  useChainState,
+} from '../../providers'
 
 import { usePoll, useRpc } from '../../../lib'
 
@@ -37,10 +41,12 @@ function Profile({ navigation }) {
   const [{ result: accounts }] = usePoll(useRpc('account_list'), 1000 * 10)
 
   const { canActivateInvite } = useIdentityState()
+  const { syncing, offline } = useChainState()
 
   const [width, setWidth] = useState(0)
   const [balance, setBalance] = useState(0)
-  const [isVisible, setToggleVisible] = useState(true)
+  const [isVisible, setToggleVisible] = useState(false)
+  const [isVisibleQRCode, setToggleVisibleQRCode] = useState(false)
   const [inputValue, onChange] = useState('')
   const { activateInvite, status } = useInviteDispatch()
 
@@ -145,7 +151,13 @@ function Profile({ navigation }) {
   }
 
   function renderBoard() {
-    const { age, state, madeFlips } = identity
+    const {
+      age,
+      state,
+      madeFlips,
+      totalShortFlipPoints,
+      totalQualifiedFlips,
+    } = identity
 
     return (
       <View style={styles.card}>
@@ -160,7 +172,9 @@ function Profile({ navigation }) {
           },
           {
             title: 'Total Score',
-            value: '0%',
+            value: `${totalShortFlipPoints} out of ${totalQualifiedFlips} (${Math.round(
+              (totalShortFlipPoints / totalQualifiedFlips) * 10000
+            ) / 100}%)`,
           },
           {
             title: 'Age',
@@ -299,8 +313,11 @@ function Profile({ navigation }) {
     }
   }
 
-  const { name, avatar, online, state } = identity
-  // const { syncing, offline } =
+  function handleTapAddress() {
+    setToggleVisibleQRCode(true)
+  }
+
+  const { name, online, state } = identity
 
   return (
     <Screen>
@@ -308,14 +325,22 @@ function Profile({ navigation }) {
         <View>
           <View style={styles.header}>
             <View style={styles.userAvatarContainer}>
-              <Avatar source={{ uri: avatar }} size={96} online={online} />
+              <Avatar
+                username={name}
+                size={96}
+                online={online}
+                nodeStatus={{ offline, syncing }}
+              />
             </View>
 
             <Text style={styles.name}>{name}</Text>
 
-            <View style={{ paddingHorizontal: 48 }}>
+            <TouchableOpacity
+              onPress={handleTapAddress}
+              style={{ paddingHorizontal: 48 }}
+            >
               <Text style={styles.address}>{address}</Text>
-            </View>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.actionInfoContainer}>
@@ -342,13 +367,23 @@ function Profile({ navigation }) {
       </ScrollView>
 
       <Modal
-        isVisible={isVisible}
+        isVisible={syncing}
         style={{ justifyContent: 'flex-end' }}
         onBackdropPress={() => {
           setToggleVisible(!isVisible)
         }}
       >
         {renderBodySynchronize()}
+      </Modal>
+
+      <Modal
+        isVisible={isVisibleQRCode}
+        style={{ justifyContent: 'flex-end' }}
+        onBackdropPress={() => {
+          setToggleVisibleQRCode(!isVisibleQRCode)
+        }}
+      >
+        {renderBodyQRCode()}
       </Modal>
     </Screen>
   )

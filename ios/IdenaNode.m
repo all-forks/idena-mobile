@@ -1,4 +1,4 @@
-//
+///Users/Verdan77/idena-mobile/ios/IdenaNode.m
 //  IdenaNode.m
 //  IdenaPhone
 //
