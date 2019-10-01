@@ -21,6 +21,10 @@ export default StyleSheet.create({
     lineHeight: 20,
     textAlign: 'center',
   },
+  addressPopupContainer: {
+    marginTop: 19,
+    marginBottom: 29,
+  },
   gray: {
     color: 'rgb(150,153,158)',
     fontSize: 16,
@@ -40,7 +44,6 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // color: '',
   },
   time: {
     color: 'rgb(83,86,92)',
@@ -140,12 +143,16 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 15,
   },
-  modal: {
+  modalLg: {
     backgroundColor: '#fff',
     paddingTop: 44,
     paddingBottom: 16,
     paddingHorizontal: 24,
     borderRadius: 8,
+  },
+  modal: {
+    paddingTop: 21,
+    paddingBottom: 27,
   },
   sectionContainer: {
     flex: 1,
@@ -155,5 +162,13 @@ export default StyleSheet.create({
   },
   buttons: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  text: {
+    color: 'rgb(83,86,92)',
+    fontSize: 15,
+    textAlign: 'center',
   },
 })

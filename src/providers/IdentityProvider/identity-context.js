@@ -71,18 +71,20 @@ export default function IdentityProvider({ children }) {
     ],
   })
 
+  const [{ result }] = usePoll(useRpc('dna_identity'), 5000 * 1)
+
   useEffect(() => {
-    async function fetchIdentity() {
-      const { result } = await callRpc('dna_identity')
+    setIdentity(result)
+    console.info(result)
+    // async function fetchIdentity() {
 
-      if (result) {
-        console.info(result)
-        setIdentity(result)
-      }
-    }
+    //   if (result) {
+    //     setIdentity(result)
+    //   }
+    // }
 
-    fetchIdentity()
-  }, [])
+    // fetchIdentity()
+  }, [result])
 
   const canSubmitFlip =
     identity &&

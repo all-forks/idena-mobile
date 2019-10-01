@@ -83,13 +83,7 @@ function Profile({ navigation }) {
   }
 
   async function handlePress() {
-
-    if (
-      identity === '' ||
-      identity === ' ' ||
-      identity === null ||
-      identity === undefined
-    ) {
+    if (!identity) {
       return
     }
 
@@ -110,8 +104,6 @@ function Profile({ navigation }) {
       error => console.info(error)
     )
   }
-
-  const { state } = identity
 
   function renderHeader() {
     const { totalQualifiedFlips, state } = identity
@@ -153,7 +145,7 @@ function Profile({ navigation }) {
   }
 
   function renderBoard() {
-    const { age, madeFlips, address } = identity
+    const { age, state, madeFlips } = identity
 
     return (
       <View style={styles.card}>
@@ -227,7 +219,88 @@ function Profile({ navigation }) {
     )
   }
 
-  const { name, avatar, madeFlips, online } = identity
+  function renderBodyQRCode() {
+    return (
+      <View style={styles.modalLg}>
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <View style={styles.qrCodeBorder}>
+            <QRCode value={address} size={110} />
+          </View>
+
+          <View style={styles.addressPopupContainer}>
+            <Text style={[styles.address, styles.gray]}>{address}</Text>
+          </View>
+
+          <View style={styles.buttons}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => handleCopyAddress(address)}
+              style={{ flex: 1 }}
+            >
+              <Text style={[styles.address, { fontSize: 15 }]}>
+                Copy Address
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={handleOpenInBrowser}
+              style={{ flex: 1 }}
+            >
+              <Text style={styles.text}>Open in browser</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    )
+  }
+
+  function handlePressOk() {
+    setToggleVisible(!isVisible)
+  }
+
+  function renderBodySynchronize() {
+    // const { offline }
+    return (
+      <View style={[styles.modalLg, styles.modal]}>
+        <Text style={[styles.text, { fontSize: 20, textAlign: 'left' }]}>
+          Synchronize...
+        </Text>
+
+        <View style={{ marginTop: 10, marginBottom: 15 }}>
+          <Text style={styles.profileInfoRowTitle}>
+            Please, try again in a few minutes.
+          </Text>
+        </View>
+
+        <TouchableOpacity activeOpacity={0.8} onPress={handlePressOk}>
+          <Text style={[styles.address, { fontSize: 15 }]}>Okay</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  function renderCurrentTask() {
+    const { madeFlips } = identity
+    if (
+      epoch &&
+      epoch.nextValidation &&
+      epoch.currentPeriod === EpochPeriod.None
+    ) {
+      const numOfFlipsToSubmit = madeFlips
+      const shouldSendFlips = numOfFlipsToSubmit > 0
+      return shouldSendFlips ? (
+        <Text style={styles.currentTaskTitle}>
+          Current task: create {numOfFlipsToSubmit} flips
+        </Text>
+      ) : (
+        <Text style={styles.currentTaskTitle}>Wait for validation</Text>
+      )
+    }
+  }
+
+  const { name, avatar, online, state } = identity
+  // const { syncing, offline } =
 
   return (
     <Screen>
@@ -254,12 +327,11 @@ function Profile({ navigation }) {
                   epoch.currentPeriod === EpochPeriod.None &&
                   `${new Date(epoch.nextValidation).toDateString()}`}
               </Text>
+              {/* {renderCurrentTask()} */}
             </View>
 
             <View style={styles.currentTasksContainer}>
-              <Text style={styles.currentTaskTitle}>
-                Current task: {madeFlips} flips
-              </Text>
+              {renderCurrentTask()}
             </View>
           </View>
 
@@ -276,30 +348,7 @@ function Profile({ navigation }) {
           setToggleVisible(!isVisible)
         }}
       >
-        <View style={styles.modal}>
-          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <View style={styles.qrCodeBorder}>
-              <QRCode value={address} size={110} />
-              <Text style={[styles.address, styles.gray]}>{address}</Text>
-
-              <View style={styles.buttons}>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => handleCopyAddress(address)}
-                >
-                  <Text>Copy Address</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={handleOpenInBrowser}
-                >
-                  <Text>Open in browser</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
+        {renderBodySynchronize()}
       </Modal>
     </Screen>
   )

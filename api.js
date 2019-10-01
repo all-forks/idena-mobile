@@ -66,3 +66,13 @@ export async function activateInviteCode(key, address) {
 
   return result
 }
+
+export async function fetchChain() {
+  const { result, error } = await callRpc('bcn_syncing')
+
+  if (error) {
+    return error
+  }
+
+  return result
+}
