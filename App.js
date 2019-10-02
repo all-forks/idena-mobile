@@ -24,9 +24,12 @@ import {
   createAppContainer,
   createStackNavigator,
 } from 'react-navigation'
-import { useRpc, useInterval, useTimeout, usePoll } from './lib'
 
+import { useRpc, useInterval, useTimeout } from './lib'
+
+// Navigation
 import ProfileNavigation from './src/navigation/ProfileNavigation'
+import ImportPrivateKeyNavigation from './src/navigation/ImportPrivateKeyNavigation'
 
 import {
   useValidationState,
@@ -559,24 +562,13 @@ function renderTabBarIcon(tintColor, state) {
 //     },
 //   }
 // )
-
-const AuthNavigator = createStackNavigator({
-  Import: {
-    screen: () => (
-      <View>
-        <Text>3232</Text>
-      </View>
-    ),
-  },
-})
-
 const MainNavigator = createSwitchNavigator(
   {
-    Auth: AuthNavigator,
+    Auth: ImportPrivateKeyNavigation,
     App: ProfileNavigation,
   },
   {
-    initialRouteName: 'App',
+    initialRouteName: 'Auth',
   }
 )
 

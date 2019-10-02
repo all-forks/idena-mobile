@@ -9,6 +9,8 @@ import {
   Linking,
 } from 'react-native'
 import Modal from 'react-native-modal'
+import AsyncStorage from '@react-native-community/async-storage'
+import dayjs from 'dayjs'
 import PropTypes from 'prop-types'
 
 import { Card } from 'react-native-paper'
@@ -47,6 +49,7 @@ function Profile({ navigation }) {
   const [balance, setBalance] = useState(0)
   const [isVisible, setToggleVisible] = useState(false)
   const [isVisibleQRCode, setToggleVisibleQRCode] = useState(false)
+  const [isVisibleFlipModal, setToggleVisibleFlipModal] = useState(false)
   const [inputValue, onChange] = useState('')
   const { activateInvite, status } = useInviteDispatch()
 
@@ -57,8 +60,6 @@ function Profile({ navigation }) {
       </Card>
     )
   }
-
-  const { address } = identity
 
   function fetchBalance() {
     if (accounts) {
@@ -89,6 +90,8 @@ function Profile({ navigation }) {
   }
 
   async function handlePress() {
+    const { address } = identity
+
     if (!identity) {
       return
     }
@@ -100,12 +103,13 @@ function Profile({ navigation }) {
     }
   }
 
-  function handleNavigateToDrafts() {
-    // const { navigation } = navigation
+  async function handleNavigateToDrafts() {
     navigation.navigate('Drafts')
   }
 
   function handleOpenInBrowser() {
+    const { address } = identity
+
     Linking.openURL(`https://scan.idena.io/address?address=${address}`).catch(
       error => console.info(error)
     )
@@ -213,6 +217,7 @@ function Profile({ navigation }) {
 
   function handleCopyAddress(address) {
     Clipboard.setString(address)
+    setToggleVisibleQRCode(!isVisibleQRCode)
   }
 
   function renderActivationForm() {
@@ -234,6 +239,8 @@ function Profile({ navigation }) {
   }
 
   function renderBodyQRCode() {
+    const { address } = identity
+
     return (
       <View style={styles.modalLg}>
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -294,6 +301,29 @@ function Profile({ navigation }) {
     )
   }
 
+  function renderBodyFlipModal() {
+    const { madeFlips } = identity
+
+    return (
+      <View style={[styles.modalLg, styles.modal]}>
+        <Text style={[styles.text, { fontSize: 20, textAlign: 'left' }]}>
+          {madeFlips} already submitted
+        </Text>
+
+        <View style={{ marginTop: 10, marginBottom: 15 }}>
+          <Text style={styles.profileInfoRowTitle}>
+            You cannot create flips for the next epoch now: the keywords are
+            generated only for current epoch
+          </Text>
+        </View>
+
+        <TouchableOpacity activeOpacity={0.8} onPress={handlePressOk}>
+          <Text style={[styles.address, { fontSize: 15 }]}>Okay</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   function renderCurrentTask() {
     const { madeFlips } = identity
     if (
@@ -317,7 +347,7 @@ function Profile({ navigation }) {
     setToggleVisibleQRCode(true)
   }
 
-  const { name, online, state } = identity
+  const { name, online, state, address } = identity
 
   return (
     <Screen>
@@ -326,7 +356,7 @@ function Profile({ navigation }) {
           <View style={styles.header}>
             <View style={styles.userAvatarContainer}>
               <Avatar
-                username={name}
+                username={address}
                 size={96}
                 online={online}
                 nodeStatus={{ offline, syncing }}
@@ -350,7 +380,7 @@ function Profile({ navigation }) {
                 {epoch &&
                   epoch.nextValidation &&
                   epoch.currentPeriod === EpochPeriod.None &&
-                  `${new Date(epoch.nextValidation).toDateString()}`}
+                  `${dayjs(epoch.nextValidation).format('DD MMM, HH:MM')}`}
               </Text>
               {/* {renderCurrentTask()} */}
             </View>
@@ -384,6 +414,15 @@ function Profile({ navigation }) {
         }}
       >
         {renderBodyQRCode()}
+      </Modal>
+      <Modal>
+        isVisible={isVisibleFlipModal}
+        style={{ justifyContent: 'flex-end' }}
+        onBackdropPress=
+        {() => {
+          setToggleVisibleFlipModal(false)
+        }}
+        {renderBodyFlipModal()}
       </Modal>
     </Screen>
   )

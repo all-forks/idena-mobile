@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { View, Image, Dimensions, TouchableOpacity } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
 
+import DraggableFlatList from 'react-native-draggable-flatlist'
 import Carousel from 'react-native-snap-carousel'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { algorithms } from '../utils'
@@ -42,7 +43,6 @@ export default function FlipShuffle({ order, nextOrder, pics, onShuffleFlip }) {
 
   function handleShuffle() {
     const nextUserOrder = [...algorithms.shuffle(order)]
-    console.info(nextUserOrder)
     const shuffledImages = shiffledPics.map(
       (_, i) => shiffledPics[nextUserOrder[i]]
     )
@@ -50,12 +50,55 @@ export default function FlipShuffle({ order, nextOrder, pics, onShuffleFlip }) {
     onShuffleFlip(nextUserOrder)
   }
 
+  function handleDrag(data) {
+    const res = []
+    shiffledPics.forEach((item, i) => {
+      if (data[i] !== item) {
+        const idx = data.indexOf(item)
+        res.push(idx)
+      } else {
+        res.push(i)
+      }
+    })
+    setShuffledPics(data)
+    onShuffleFlip(res)
+  }
+
+  function _renderDraggableItem({ item, index, move, moveEnd, isActive }) {
+    return (
+      <TouchableOpacity
+        key={index}
+        onLongPress={move}
+        onPressOut={moveEnd}
+        style={{ width: 171, height: 125 }}
+      >
+        <Image
+          source={{ uri: item }}
+          style={[
+            {
+              width: 171,
+              height: 125,
+            },
+            index === 0 && {
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
+            },
+            index === shiffledPics.length - 1 && {
+              borderBottomLeftRadius: 8,
+              borderBottomRightRadius: 8,
+            },
+          ]}
+          resizeMode="cover"
+        />
+      </TouchableOpacity>
+    )
+  }
+
   // eslint-disable-next-line react/prop-types
   function _renderItem({ item, index }) {
-    console.info(index)
     return Array.isArray ? (
       <View key={index} style={{ opacity: index === 0 ? 0.8 : 1 }}>
-        <View>
+        <View style={{ width: 171, height: 500 }}>
           {index === 1 && (
             <View
               style={{
@@ -68,29 +111,38 @@ export default function FlipShuffle({ order, nextOrder, pics, onShuffleFlip }) {
               </TouchableOpacity>
             </View>
           )}
-
-          {item.map((carouselItem, i) => (
-            <View key={i}>
-              <Image
-                source={{ uri: carouselItem }}
-                style={[
-                  {
-                    width: 171,
-                    height: 125,
-                  },
-                  i === 0 && {
-                    borderTopLeftRadius: 8,
-                    borderTopRightRadius: 8,
-                  },
-                  i === item.length - 1 && {
-                    borderBottomLeftRadius: 8,
-                    borderBottomRightRadius: 8,
-                  },
-                ]}
-                resizeMode="cover"
-              />
-            </View>
-          ))}
+          {index == 1 && (
+            <DraggableFlatList
+              data={item}
+              renderItem={_renderDraggableItem}
+              keyExtractor={(i, indexx) => indexx}
+              scrollEnabled={false}
+              onMoveEnd={({ data }) => handleDrag(data)}
+            />
+          )}
+          {index == 0 &&
+            item.map((carouselItem, i) => (
+              <View key={i}>
+                <Image
+                  source={{ uri: carouselItem }}
+                  style={[
+                    {
+                      width: 171,
+                      height: 125,
+                    },
+                    i === 0 && {
+                      borderTopLeftRadius: 8,
+                      borderTopRightRadius: 8,
+                    },
+                    i === item.length - 1 && {
+                      borderBottomLeftRadius: 8,
+                      borderBottomRightRadius: 8,
+                    },
+                  ]}
+                  resizeMode="cover"
+                />
+              </View>
+            ))}
         </View>
       </View>
     ) : null
@@ -126,6 +178,7 @@ export default function FlipShuffle({ order, nextOrder, pics, onShuffleFlip }) {
           data={[pics, shiffledPics]}
           renderItem={_renderItem}
           sliderWidth={Dimensions.get('window').width - 30}
+          firstItem={1}
           itemWidth={90}
         />
       </View>

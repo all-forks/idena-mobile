@@ -1,10 +1,8 @@
 import React from 'react'
-import { View } from 'react-native'
 import {
   createStackNavigator,
   StackViewTransitionConfigs,
 } from 'react-navigation'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { Screen } from '../../components'
 import { Profile, Flip, Drafts } from '../../containers'
