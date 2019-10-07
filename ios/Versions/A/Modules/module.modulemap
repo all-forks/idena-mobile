@@ -1,0 +1,8 @@
+framework module "Node" {
+	header "ref.h"
+    header "Node.objc.h"
+    header "Universe.objc.h"
+    header "Node.h"
+
+    export *
+}
