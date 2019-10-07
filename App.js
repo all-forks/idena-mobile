@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   SafeAreaView,
   StyleSheet,
@@ -19,12 +19,9 @@ import {
 
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import {
-  createSwitchNavigator,
-  createAppContainer,
-  createStackNavigator,
-} from 'react-navigation'
+import { createSwitchNavigator, createAppContainer } from 'react-navigation'
 
+import GlobalFont from 'react-native-global-font'
 import { useRpc, useInterval, useTimeout } from './lib'
 
 // Navigation
@@ -72,6 +69,10 @@ import { EXTRA_FLIPS_DELAY } from './config'
 // IdenaNode.start()
 
 function Screen({ children }) {
+  useEffect(() => {
+    GlobalFont.applyGlobal('SFUIText-Regular')
+  }, [])
+
   return (
     <PaperProvider>
       <AppProviders>

@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native'
+import { Colors } from '../../utils'
 
 export default StyleSheet.create({
   button: {
@@ -15,6 +16,6 @@ export default StyleSheet.create({
   },
 
   disabledTitle: {
-    color: 'red',
+    color: Colors.lightGrey,
   },
 })

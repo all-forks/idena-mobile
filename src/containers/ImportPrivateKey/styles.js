@@ -12,11 +12,12 @@ export default StyleSheet.create({
     color: Colors.grey,
     fontSize: 15,
     textAlign: 'center',
-    fontWeight: '500',
+    fontWeight: 'bold',
   },
   description: {
     color: Colors.lightGrey,
     fontSize: 14,
+    fontWeight: '400',
     textAlign: 'center',
   },
 })

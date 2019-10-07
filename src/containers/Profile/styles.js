@@ -126,7 +126,9 @@ export default StyleSheet.create({
   card: {
     marginTop: 21,
     marginBottom: 25,
-    padding: 20,
+    // padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
   },
   profileInfoRow: {
     flexDirection: 'row',

@@ -35,6 +35,10 @@ target 'IdFon' do
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  pod 'react-native-camera', path: '../node_modules/react-native-camera'
+
+  pod 'Permission-Camera', :path => "../node_modules/react-native-permissions/ios/Camera.podspec"
+
   target 'IdFonTests' do
     inherit! :search_paths
     # Pods for testing

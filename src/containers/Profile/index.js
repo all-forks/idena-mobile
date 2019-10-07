@@ -9,7 +9,6 @@ import {
   Linking,
 } from 'react-native'
 import Modal from 'react-native-modal'
-import AsyncStorage from '@react-native-community/async-storage'
 import dayjs from 'dayjs'
 import PropTypes from 'prop-types'
 
@@ -32,7 +31,7 @@ import { EpochPeriod } from '../../../validation'
 
 import { getBalance } from '../../../api'
 
-import { IdentityStatus } from '../../utils'
+import { IdentityStatus, Colors } from '../../utils'
 
 import styles from './styles'
 
@@ -78,6 +77,13 @@ function Profile({ navigation }) {
   }
 
   function handleCreateNewFlip() {
+    const { madeFlips } = identity
+
+    if (madeFlips >= 3) {
+      setToggleVisibleFlipModal(!isVisibleFlipModal)
+      return
+    }
+
     navigation.navigate('Flip')
   }
 
@@ -136,19 +142,30 @@ function Profile({ navigation }) {
           onPress={handleNavigateToDrafts}
           style={[styles.flipItem, { width, flex: 0.67 }]}
         >
-          <ImageBackground
-            source={profileFlipAvatar}
-            resizeMode="cover"
-            borderRadius={16}
-            style={styles.flipImage}
-          >
-            <View style={{ padding: 10 }}>
-              <Text style={styles.flipTitle}>
-                {totalQualifiedFlips === 1 ? 'Draft' : 'Drafts'}
-              </Text>
-              <Text style={styles.flipText}>{totalQualifiedFlips} flips</Text>
+          {profileFlipAvatar ? (
+            <ImageBackground
+              source={profileFlipAvatar}
+              resizeMode="cover"
+              borderRadius={16}
+              style={styles.flipImage}
+            >
+              <View style={{ padding: 10 }}>
+                <Text style={styles.flipTitle}>
+                  {totalQualifiedFlips === 1 ? 'Draft' : 'Drafts'}
+                </Text>
+                <Text style={styles.flipText}>{totalQualifiedFlips} flips</Text>
+              </View>
+            </ImageBackground>
+          ) : (
+            <View style={{ backgroundColor: Colors.gray }}>
+              <View style={{ padding: 10 }}>
+                <Text style={styles.flipTitle}>
+                  {totalQualifiedFlips === 1 ? 'Draft' : 'Drafts'}
+                </Text>
+                <Text style={styles.flipText}>{totalQualifiedFlips} flips</Text>
+              </View>
             </View>
-          </ImageBackground>
+          )}
         </TouchableOpacity>
       </View>
     ) : null
@@ -158,6 +175,7 @@ function Profile({ navigation }) {
     const {
       age,
       state,
+      stake,
       madeFlips,
       totalShortFlipPoints,
       totalQualifiedFlips,
@@ -172,11 +190,15 @@ function Profile({ navigation }) {
           },
           {
             title: 'Balance',
-            value: `${balance} DNA`,
+            value: `${balance.slice(0, 13)} DNA`,
+          },
+          {
+            title: 'Stake',
+            value: `${stake.slice(0, 13)} DNA`,
           },
           {
             title: 'Total Score',
-            value: `${totalShortFlipPoints} out of ${totalQualifiedFlips} (${Math.round(
+            value: `${totalShortFlipPoints}/${totalQualifiedFlips} (${Math.round(
               (totalShortFlipPoints / totalQualifiedFlips) * 10000
             ) / 100}%)`,
           },
@@ -276,8 +298,20 @@ function Profile({ navigation }) {
     )
   }
 
-  function handlePressOk() {
-    setToggleVisible(!isVisible)
+  function handlePressOk(kindModal) {
+    switch (kindModal) {
+      case 'FlipModal': {
+        setToggleVisibleFlipModal(!isVisibleFlipModal)
+        break
+      }
+      case 'Synchronize': {
+        setToggleVisible(!isVisible)
+        break
+      }
+      default: {
+        break
+      }
+    }
   }
 
   function renderBodySynchronize() {
@@ -285,7 +319,7 @@ function Profile({ navigation }) {
     return (
       <View style={[styles.modalLg, styles.modal]}>
         <Text style={[styles.text, { fontSize: 20, textAlign: 'left' }]}>
-          Synchronize...
+          Synchronizing...
         </Text>
 
         <View style={{ marginTop: 10, marginBottom: 15 }}>
@@ -294,7 +328,10 @@ function Profile({ navigation }) {
           </Text>
         </View>
 
-        <TouchableOpacity activeOpacity={0.8} onPress={handlePressOk}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => handlePressOk('Synchronize')}
+        >
           <Text style={[styles.address, { fontSize: 15 }]}>Okay</Text>
         </TouchableOpacity>
       </View>
@@ -317,7 +354,10 @@ function Profile({ navigation }) {
           </Text>
         </View>
 
-        <TouchableOpacity activeOpacity={0.8} onPress={handlePressOk}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => handlePressOk('FlipModal')}
+        >
           <Text style={[styles.address, { fontSize: 15 }]}>Okay</Text>
         </TouchableOpacity>
       </View>
@@ -347,7 +387,7 @@ function Profile({ navigation }) {
     setToggleVisibleQRCode(true)
   }
 
-  const { name, online, state, address } = identity
+  const { state, address } = identity
 
   return (
     <Screen>
@@ -356,14 +396,13 @@ function Profile({ navigation }) {
           <View style={styles.header}>
             <View style={styles.userAvatarContainer}>
               <Avatar
-                username={address}
+                address={address}
                 size={96}
-                online={online}
                 nodeStatus={{ offline, syncing }}
               />
             </View>
 
-            <Text style={styles.name}>{name}</Text>
+            <Text style={styles.name}>My Identity</Text>
 
             <TouchableOpacity
               onPress={handleTapAddress}
@@ -375,7 +414,7 @@ function Profile({ navigation }) {
 
           <View style={styles.actionInfoContainer}>
             <View style={styles.nextValidationRow}>
-              <Text style={styles.profileInfoRowTitle}>Next Validation</Text>
+              <Text style={styles.profileInfoRowTitle}>Next validation</Text>
               <Text style={styles.time}>
                 {epoch &&
                   epoch.nextValidation &&

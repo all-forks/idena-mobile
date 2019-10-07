@@ -17,7 +17,11 @@ export default function Button({
       activeOpacity={0.8}
       disabled={disabled}
       onPress={onPress}
-      style={[styles.button, style]}
+      style={[
+        styles.button,
+        disabled && { backgroundColor: 'rgb(232,234,237)' },
+        style,
+      ]}
       {...otherProps}
     >
       {loading ? (

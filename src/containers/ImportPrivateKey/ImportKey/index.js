@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import PropTypes from 'prop-types'
 import {
   View,
@@ -8,6 +8,13 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native'
+import {
+  check,
+  request,
+  openSettings,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions'
 
 import { Input, Button } from '../../../components'
 
@@ -18,6 +25,10 @@ import globalImportStyles from '../styles'
 import styles from './styles'
 
 export default function ImportPrivateKey({ navigation }) {
+  console.disableYellowBox = true
+  const [value, setValue] = useState('')
+  const textInputRef = useRef(null)
+
   const steps = [
     {
       step: 1,
@@ -33,6 +44,50 @@ export default function ImportPrivateKey({ navigation }) {
     },
   ]
 
+  async function handlePressScannerIcon() {
+    try {
+      await request(PERMISSIONS.IOS.CAMERA)
+      const result = await check(PERMISSIONS.IOS.CAMERA)
+      switch (result) {
+        case RESULTS.UNAVAILABLE:
+        case RESULTS.BLOCKED:
+        case RESULTS.DENIED:
+          console.info('blocked')
+          try {
+            await openSettings()
+          } catch (error) {
+            console.warn('Something went wrong')
+          }
+          break
+        case RESULTS.GRANTED:
+          navigation.navigate('QRCodeScanner', {
+            onNext: event => {
+              setValue(event.data || event.rawData)
+
+              const timer = setTimeout(() => {
+                navigation.navigate('EnterPassword', {
+                  encodedPrivateKey: event.data || event.rawData,
+                })
+                clearTimeout(timer)
+              }, 1000)
+            },
+          })
+          return
+        default: {
+          console.info('d')
+        }
+      }
+    } catch (error) {
+      console.info(error)
+    }
+  }
+
+  function handleNavigateToPassword() {
+    navigation.navigate('EnterPassword', {
+      encodedPrivateKey: value,
+    })
+  }
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -41,7 +96,7 @@ export default function ImportPrivateKey({ navigation }) {
           { justifyContent: 'flex-start', marginBottom: 0 },
         ]}
         behavior="position"
-        keyboardVerticalOffset={-160}
+        keyboardVerticalOffset={-100}
       >
         <View style={{ marginTop: 36 }}>
           <View
@@ -70,14 +125,23 @@ export default function ImportPrivateKey({ navigation }) {
 
           <View>
             <Input
+              ref={textInputRef}
+              title="Encoded Key"
               placeholder="Encoded key"
-              onChange={() => {}}
+              blurOnSubmit
+              defaultValue=""
+              value={value}
               returnKeyType="done"
+              onChange={text => setValue(text)}
               icon={scannerIcon}
-              onPressIcon={() => {}}
+              onPressIcon={handlePressScannerIcon}
             />
             <View style={{ marginTop: 16 }}>
-              <Button title="Proceed" onPress={() => {}} />
+              <Button
+                title="Proceed"
+                onPress={handleNavigateToPassword}
+                disabled={value === '' && true}
+              />
             </View>
           </View>
         </View>

@@ -1,16 +1,19 @@
 import { StyleSheet } from 'react-native'
+import { Colors } from '../../utils'
 
 export default StyleSheet.create({
   inputContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 5,
-    padding: 15,
-    height: 48,
+    paddingHorizontal: 15,
+    height: 56,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: 'rgb(232, 234, 237)',
   },
   input: {},
+  title: {
+    color: Colors.accent,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
 })

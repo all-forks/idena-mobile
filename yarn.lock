@@ -4427,6 +4427,11 @@ lodash.unescape@4.0.1:
   resolved "https://registry.yarnpkg.com/lodash.unescape/-/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
   integrity sha1-vyJJiGzlFM2hEvrpIYzcBlIR/Jw=
 
+lodash.wrap@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/lodash.wrap/-/lodash.wrap-4.1.1.tgz#9c3770947a821ec6978a93571e1a6179afcd7fc8"
+  integrity sha1-nDdwlHqCHsaXipNXHhphea/Nf8g=
+
 lodash@^4.0.0:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
@@ -5762,6 +5767,13 @@ react-native-animatable@^1.3.1:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-camera@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.6.0.tgz#91f97bbe97345281efb6398bb97d3628bb903a22"
+  integrity sha512-hIcMruSNBw6BA1BJ42nzzxXrydHUuJxwqh6WkZK37P2klxraeC9SkqULAYiq+bsQa0lycA03g/4JSMUZw5wbIg==
+  dependencies:
+    prop-types "^15.6.2"
+
 react-native-drag-drop-grid-library@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/react-native-drag-drop-grid-library/-/react-native-drag-drop-grid-library-1.0.7.tgz#485046b5273e6cbe992802a343494002c8c064c7"
@@ -5787,6 +5799,13 @@ react-native-gesture-handler@^1.4.1:
     invariant "^2.2.4"
     prop-types "^15.7.2"
 
+react-native-global-font@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-global-font/-/react-native-global-font-1.0.2.tgz#acb6a56879e4a82673e44c91b91d3ccd6c386381"
+  integrity sha512-3wvczbcVIecLEvTYIjQ+A3t6TrHdJGYgchmKa9Br5+yrBiOuoWGif31zlUyYvVneBm2mpGIKDKZzMbM3BAOyuw==
+  dependencies:
+    lodash.wrap "^4.1.1"
+
 react-native-modal@^11.4.0:
   version "11.4.0"
   resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-11.4.0.tgz#29f2fd241aed864f3c7ce25a941498ebe2ab217a"
@@ -5806,6 +5825,11 @@ react-native-paper@^2.16.0:
     hoist-non-react-statics "^3.1.0"
     react-lifecycles-compat "^3.0.4"
     react-native-safe-area-view "^0.12.0"
+
+react-native-permissions@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-2.0.0.tgz#a18a52bb17f992deb6e48dcc6f2bcc44793cb09c"
+  integrity sha512-cUBGfV5csl0tIhYK69jqXoRyupv7eHUfg2Ua0VkAXXfLOeOxcBgPjC8/BEkUGzi3gUd+tZbwuLg/+teiPbsfcg==
 
 react-native-qrcode-svg@^5.2.0:
   version "5.2.0"

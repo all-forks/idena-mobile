@@ -32,7 +32,9 @@ export default function EnterPassword({ navigation }) {
 
           <View style={{ marginBottom: 16 }}>
             <Input
+              title="Password"
               placeholder="Password"
+              blurOnSubmit
               value={textInputValue}
               secureTextEntry
               onChange={text => onChangeText(text)}
@@ -40,7 +42,11 @@ export default function EnterPassword({ navigation }) {
           </View>
 
           <View>
-            <Button title="Import" onPress={handlePress} />
+            <Button
+              title="Import"
+              onPress={handlePress}
+              disabled={textInputValue === '' && true}
+            />
           </View>
         </View>
       </>
