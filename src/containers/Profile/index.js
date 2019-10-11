@@ -1,23 +1,23 @@
-import React, { Fragment, useState } from 'react'
+import React, { useState } from 'react'
 import {
   View,
   Text,
   ScrollView,
-  ImageBackground,
   TouchableOpacity,
   Clipboard,
   Linking,
+  Image,
 } from 'react-native'
+import PropTypes from 'prop-types'
 import Modal from 'react-native-modal'
 import dayjs from 'dayjs'
-import PropTypes from 'prop-types'
-
-import { Card } from 'react-native-paper'
 import QRCode from 'react-native-qrcode-svg'
-import Icon from 'react-native-vector-icons/MaterialIcons'
-import profileFlipAvatar from '../../assets/images/profile_flip_avatar.jpeg'
 
-import { Avatar, Button, Screen, Input } from '../../components'
+import newIcon from '../../assets/icons/new/new2x.png'
+
+import { Avatar, LoadingIndicator, Button, Input } from '../../components'
+import ActivationForm from './components/ActivationForm/activation-form'
+import StatsBoard from './components/StatsBoard/stats-board'
 
 import {
   useInviteDispatch,
@@ -31,16 +31,16 @@ import { EpochPeriod } from '../../../validation'
 
 import { getBalance } from '../../../api'
 
-import { IdentityStatus, Colors } from '../../utils'
+import { Toast, IdentityStatus, Colors } from '../../utils'
 
 import styles from './styles'
 
 function Profile({ navigation }) {
-  console.disableYellowBox = true
+  // NativeModules.IdenaNode.start()
+
   const [{ result: identity }] = usePoll(useRpc('dna_identity'), 1000 * 1)
   const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 10)
   const [{ result: accounts }] = usePoll(useRpc('account_list'), 1000 * 10)
-
   const { canActivateInvite } = useIdentityState()
   const { syncing, offline } = useChainState()
 
@@ -50,30 +50,42 @@ function Profile({ navigation }) {
   const [isVisibleQRCode, setToggleVisibleQRCode] = useState(false)
   const [isVisibleFlipModal, setToggleVisibleFlipModal] = useState(false)
   const [inputValue, onChange] = useState('')
-  const { activateInvite, status } = useInviteDispatch()
+  const { activateInvite } = useInviteDispatch()
 
-  if (!identity) {
-    return (
-      <Card style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Loading...</Text>
-      </Card>
-    )
-  }
+  if (!identity || !epoch || !accounts) return <LoadingIndicator />
 
-  function fetchBalance() {
+  const isNeedActivateInvite =
+    (identity.state === IdentityStatus.Undefined ||
+      identity.state === IdentityStatus.Killed) &&
+    canActivateInvite
+
+  async function fetchBalance() {
     if (accounts) {
+      if (accounts.length === 0) {
+        const response = await getBalance(identity.address)
+        setBalance(response.balance)
+        return
+      }
+
       const balancePromises = accounts.map(account =>
         getBalance(account).then(response => ({ account, ...response }))
       )
 
-      Promise.all(balancePromises)
-        .then(resp => {
-          setBalance(
-            resp.map(item => item.balance).reduce((acc, amount) => acc + amount)
-          )
-        })
-        .catch(error => console.log('err:', error))
+      try {
+        const balances = await Promise.all(balancePromises)
+        setBalance(
+          balances
+            .map(item => item.balance)
+            .reduce((acc, amount) => acc + amount)
+        )
+      } catch (error) {
+        console.info(error)
+      }
     }
+  }
+
+  if (accounts) {
+    fetchBalance()
   }
 
   function handleCreateNewFlip() {
@@ -87,10 +99,6 @@ function Profile({ navigation }) {
     navigation.navigate('Flip')
   }
 
-  if (accounts) {
-    fetchBalance()
-  }
-
   function handleLayout(event) {
     setWidth(Math.round(event.nativeEvent.layout.width / 2 - 35))
   }
@@ -98,14 +106,12 @@ function Profile({ navigation }) {
   async function handlePress() {
     const { address } = identity
 
-    if (!identity) {
-      return
-    }
+    if (!identity) return
 
     try {
       await activateInvite(inputValue, address)
     } catch (error) {
-      console.info(error)
+      Toast.showToast(error.message)
     }
   }
 
@@ -113,15 +119,17 @@ function Profile({ navigation }) {
     navigation.navigate('Drafts')
   }
 
-  function handleOpenInBrowser() {
+  async function handleOpenInBrowser() {
     const { address } = identity
 
-    Linking.openURL(`https://scan.idena.io/address?address=${address}`).catch(
-      error => console.info(error)
-    )
+    try {
+      await Linking.openURL(`https://scan.idena.io/address?address=${address}`)
+    } catch (error) {
+      console.info(error)
+    }
   }
 
-  function renderHeader() {
+  function renderFlipHeader() {
     const { totalQualifiedFlips, state } = identity
 
     return [IdentityStatus.Verified, IdentityStatus.Newbie].includes(state) ? (
@@ -132,7 +140,11 @@ function Profile({ navigation }) {
           onPress={handleCreateNewFlip}
         >
           <View>
-            <Icon name="play-arrow" color="white" size={20} />
+            <Image
+              source={newIcon}
+              style={{ width: 20, height: 20 }}
+              resizeMode="contain"
+            />
             <Text style={styles.flipTitle}>New flip</Text>
           </View>
         </TouchableOpacity>
@@ -142,7 +154,15 @@ function Profile({ navigation }) {
           onPress={handleNavigateToDrafts}
           style={[styles.flipItem, { width, flex: 0.67 }]}
         >
-          {profileFlipAvatar ? (
+          <View style={{ backgroundColor: Colors.gray }}>
+            <View style={{ padding: 10 }}>
+              <Text style={styles.flipTitle}>
+                {totalQualifiedFlips === 1 ? 'Draft' : 'Drafts'}
+              </Text>
+              <Text style={styles.flipText}>{totalQualifiedFlips} flips</Text>
+            </View>
+          </View>
+          {/* {profileFlipAvatar ? (
             <ImageBackground
               source={profileFlipAvatar}
               resizeMode="cover"
@@ -156,105 +176,36 @@ function Profile({ navigation }) {
                 <Text style={styles.flipText}>{totalQualifiedFlips} flips</Text>
               </View>
             </ImageBackground>
-          ) : (
-            <View style={{ backgroundColor: Colors.gray }}>
-              <View style={{ padding: 10 }}>
-                <Text style={styles.flipTitle}>
-                  {totalQualifiedFlips === 1 ? 'Draft' : 'Drafts'}
-                </Text>
-                <Text style={styles.flipText}>{totalQualifiedFlips} flips</Text>
-              </View>
-            </View>
-          )}
+          ) */}
         </TouchableOpacity>
       </View>
     ) : null
   }
 
-  function renderBoard() {
-    const {
-      age,
-      state,
-      stake,
-      madeFlips,
-      totalShortFlipPoints,
-      totalQualifiedFlips,
-    } = identity
-
-    return (
-      <View style={styles.card}>
-        {[
-          {
-            title: 'Status',
-            value: state,
-          },
-          {
-            title: 'Balance',
-            value: `${balance.slice(0, 13)} DNA`,
-          },
-          {
-            title: 'Stake',
-            value: `${stake.slice(0, 13)} DNA`,
-          },
-          {
-            title: 'Total Score',
-            value: `${totalShortFlipPoints}/${totalQualifiedFlips} (${Math.round(
-              (totalShortFlipPoints / totalQualifiedFlips) * 10000
-            ) / 100}%)`,
-          },
-          {
-            title: 'Age',
-            value: `${age} ${parseInt(age) === 1 ? 'epoch' : 'epochs'}`,
-          },
-          {
-            title: 'Current task',
-            value: `Create ${madeFlips} flips`,
-          },
-        ].map(({ title, value }, index) => (
-          <View key={index} style={styles.profileInfoRow}>
-            <Text style={styles.profileInfoRowTitle}>{title}</Text>
-            <Text
-              style={styles.profileInfoRowValue}
-              numberOfLines={1}
-              ellipsizeMode="head"
-            >
-              {title === 'Public Address'
-                ? `${value.slice(0, 13)}...`
-                : value && value}
-            </Text>
-          </View>
-        ))}
-      </View>
-    )
-  }
-
-  function renderFlips() {
-    return (
-      <Fragment>
-        {renderHeader()}
-        {renderBoard()}
-      </Fragment>
-    )
-  }
-
   function handleCopyAddress(address) {
     Clipboard.setString(address)
+
+    Toast.showToast('Copied to Clipboard!')
+
     setToggleVisibleQRCode(!isVisibleQRCode)
   }
 
   function renderActivationForm() {
     return (
       <View style={styles.formContainer}>
-        <View style={styles.formHeader}>
-          <Text style={styles.activateTitle}>Activate</Text>
-          <Text style={styles.activateNoticement}>
-            Please enter your invite code to become part of Idena
-          </Text>
-        </View>
-
         <View style={styles.formActionsHandlers}>
-          <Input onChange={onChange} />
-          <Button onPress={handlePress} title="Activate" />
+          <View style={{ marginBottom: 16 }}>
+            <Input
+              onChange={onChange}
+              placeholder="Invitation code"
+              style={{ width: '100%' }}
+            />
+          </View>
+          <Button
+            onPress={handlePress}
+            title="Activate"
+            disabled={!inputValue}
+          />
         </View>
       </View>
     )
@@ -365,20 +316,39 @@ function Profile({ navigation }) {
   }
 
   function renderCurrentTask() {
-    const { madeFlips } = identity
+    const { requiredFlips, flips, state } = identity
+
     if (
       epoch &&
       epoch.nextValidation &&
       epoch.currentPeriod === EpochPeriod.None
     ) {
-      const numOfFlipsToSubmit = madeFlips
+      const numOfFlipsToSubmit = requiredFlips - (flips || []).length
       const shouldSendFlips = numOfFlipsToSubmit > 0
-      return shouldSendFlips ? (
-        <Text style={styles.currentTaskTitle}>
-          Current task: create {numOfFlipsToSubmit} flips
-        </Text>
-      ) : (
-        <Text style={styles.currentTaskTitle}>Wait for validation</Text>
+
+      if (shouldSendFlips) {
+        return (
+          <View style={styles.currentTasksContainer}>
+            <Text style={styles.currentTaskTitle}>
+              Current task: create {numOfFlipsToSubmit} flip
+              {numOfFlipsToSubmit > 1 ? 's' : ''}
+            </Text>
+          </View>
+        )
+      }
+
+      if (
+        (state === IdentityStatus.Undefined ||
+          state === IdentityStatus.Killed) &&
+        canActivateInvite
+      ) {
+        return null
+      }
+
+      return (
+        <View style={styles.currentTasksContainer}>
+          <Text style={styles.currentTaskTitle}>Wait for validation</Text>
+        </View>
       )
     }
   }
@@ -390,7 +360,7 @@ function Profile({ navigation }) {
   const { state, address } = identity
 
   return (
-    <Screen>
+    <>
       <ScrollView onLayout={handleLayout} style={styles.container}>
         <View>
           <View style={styles.header}>
@@ -419,23 +389,26 @@ function Profile({ navigation }) {
                 {epoch &&
                   epoch.nextValidation &&
                   epoch.currentPeriod === EpochPeriod.None &&
-                  `${dayjs(epoch.nextValidation).format('DD MMM, HH:MM')}`}
+                  `${dayjs(epoch.nextValidation).format('DD MMM [,] HH:mm')}`}
               </Text>
-              {/* {renderCurrentTask()} */}
             </View>
-
-            <View style={styles.currentTasksContainer}>
-              {renderCurrentTask()}
-            </View>
+            {renderCurrentTask()}
           </View>
 
-          {state === IdentityStatus.Invite && canActivateInvite
-            ? renderActivationForm()
-            : renderFlips()}
+          {isNeedActivateInvite ? (
+            <ActivationForm
+              onChange={text => onChange(text)}
+              onPress={handlePress}
+              inputValue={inputValue}
+            />
+          ) : (
+            renderFlipHeader()
+          )}
+          <StatsBoard {...{ ...identity, balance }} />
         </View>
       </ScrollView>
 
-      <Modal
+      {/* <Modal
         isVisible={syncing}
         style={{ justifyContent: 'flex-end' }}
         onBackdropPress={() => {
@@ -443,7 +416,7 @@ function Profile({ navigation }) {
         }}
       >
         {renderBodySynchronize()}
-      </Modal>
+      </Modal> */}
 
       <Modal
         isVisible={isVisibleQRCode}
@@ -463,7 +436,7 @@ function Profile({ navigation }) {
         }}
         {renderBodyFlipModal()}
       </Modal>
-    </Screen>
+    </>
   )
 }
 

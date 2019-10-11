@@ -1,6 +1,6 @@
-import React, { useEffect, useReducer, createContext } from 'react'
+import React, { useReducer, createContext } from 'react'
 
-import { usePoll, useRpc, useInterval } from '../../../lib'
+import { useInterval } from '../../../lib'
 
 import { callRpc } from '../../../api'
 
@@ -56,12 +56,10 @@ export default function ChainProvider({ children }) {
   const [state, dispatch] = useReducer(chainReducer, initialState)
 
   function fetchSuccess(sync) {
-    console.info('Dispatch success', sync)
     dispatch({ type: FETCH_SYNC_SUCCESS, payload: sync })
   }
 
   function fetchFailed() {
-    console.info('Dispatch failed')
     dispatch({ type: FETCH_SYNC_FAILED })
   }
 

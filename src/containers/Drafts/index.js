@@ -6,48 +6,12 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
-  StyleSheet,
 } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
 import Modal from 'react-native-modal'
 import dayjs from 'dayjs'
 
-const styles = StyleSheet.create({
-  modalLg: {
-    backgroundColor: '#fff',
-    paddingTop: 44,
-    paddingBottom: 16,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  modal: {
-    paddingTop: 21,
-    paddingBottom: 27,
-  },
-  text: {
-    color: 'rgb(83,86,92)',
-    fontSize: 15,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  address: {
-    color: 'rgb(87,143,255)',
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
-  },
-  profileInfoRowTitle: {
-    marginVertical: 13,
-    color: 'rgb(150,153,158)',
-    fontSize: 16,
-  },
-  buttons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 16,
-  },
-})
+import styles from './styles'
 
 export default function Drafts() {
   const [drafts, updateDrafts] = useState([])
@@ -208,8 +172,8 @@ export default function Drafts() {
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
-          <Text>No drafts</Text>
-          <Text>
+          <Text style={styles.title}>No Drafts</Text>
+          <Text style={styles.description}>
             When you create flips and save them as drafts they will be appear
             here.
           </Text>

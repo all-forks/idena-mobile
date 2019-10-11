@@ -2,9 +2,11 @@
  * @format
  */
 
-import { AppRegistry, SafeAreaView } from 'react-native'
-import React from 'react'
+import { AppRegistry } from 'react-native'
+import React, { useEffect } from 'react'
 import Reactotron from 'reactotron-react-native'
+
+import GlobalFont from 'react-native-global-font'
 
 import App from './App'
 import { name as appName } from './app.json'
@@ -12,11 +14,11 @@ import { name as appName } from './app.json'
 global.Buffer = require('buffer/').Buffer
 
 function WrappedApp() {
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <App />
-    </SafeAreaView>
-  )
+  console.disableYellowBox = true
+  useEffect(() => {
+    GlobalFont.applyGlobal('SFUIText-Regular')
+  }, [])
+  return <App />
 }
 
 // eslint-disable-next-line no-undef

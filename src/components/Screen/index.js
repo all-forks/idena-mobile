@@ -1,6 +1,7 @@
 import React from 'react'
-import { SafeAreaView, View, StatusBar } from 'react-native'
+import { View, StatusBar } from 'react-native'
 import PropTypes from 'prop-types'
+// import { SafeAreaView } from 'react-navigation'
 
 import { Provider as PaperProvider } from 'react-native-paper'
 
@@ -15,11 +16,9 @@ export default function Screen({ children }) {
       <AppProviders>
         <View style={styles.full}>
           <StatusBar barStyle="dark-content" />
-          <SafeAreaView style={styles.full}>
-            <View style={styles.scrollView}>
-              <WithValidation>{children}</WithValidation>
-            </View>
-          </SafeAreaView>
+          <View style={styles.scrollView}>
+            <WithValidation>{children}</WithValidation>
+          </View>
         </View>
       </AppProviders>
     </PaperProvider>

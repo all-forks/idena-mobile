@@ -15,7 +15,7 @@ export async function callRpc(method, ...params) {
         id: 1,
       }),
     })
-    if (resp.ok) {
+    if (resp.ok && (resp.status === 200 || resp.status === 201)) {
       const json = await resp.json()
       return json
     }
@@ -58,22 +58,17 @@ export async function getBalance(address) {
 }
 
 export async function activateInviteCode(key, address) {
-  const { result, error } = await callRpc('dna_activateInvite', {
+  const response = await callRpc('dna_activateInvite', {
     key,
     address,
   })
 
-  if (error) {
-    return error
-  }
-
-  return result
+  return response
 }
 
 export async function fetchChain() {
   try {
     const { result, error } = await callRpc('bcn_syncing')
-    // console.info('bcn_syncing', result)
     if (error) {
       return error
     }

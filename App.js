@@ -5,10 +5,9 @@ import {
   ScrollView,
   View,
   Text,
-  StatusBar,
   TouchableOpacity,
   Image,
-  // NativeModules,
+  NativeModules,
 } from 'react-native'
 
 import {
@@ -22,6 +21,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import { createSwitchNavigator, createAppContainer } from 'react-navigation'
 
 import GlobalFont from 'react-native-global-font'
+import AsyncStorage from '@react-native-community/async-storage'
 import { useRpc, useInterval, useTimeout } from './lib'
 
 // Navigation
@@ -64,9 +64,7 @@ import {
 } from './src/providers'
 
 import { EXTRA_FLIPS_DELAY } from './config'
-
-// const { IdenaNode } = NativeModules
-// IdenaNode.start()
+import { Toast } from './src/utils'
 
 function Screen({ children }) {
   useEffect(() => {
@@ -77,7 +75,7 @@ function Screen({ children }) {
     <PaperProvider>
       <AppProviders>
         <View style={styles.full}>
-          <StatusBar barStyle="dark-content" />
+          {/* <StatusBar barStyle="dark-content" /> */}
           <SafeAreaView style={styles.full}>
             <View
               // contentInsetAdjustmentBehavior="automatic"
@@ -536,40 +534,42 @@ function renderTabBarIcon(tintColor, state) {
   return <IconComponent name={iconName} size={25} color={tintColor} />
 }
 
-// const MainNavigator = createBottomTabNavigator(
-//   {
-//     Home: {
-//       screen: Home,
-//     },
-//     Contacts: {
-//       screen: Contacts,
-//     },
-//     Chats: {
-//       screen: Chats,
-//     },
-//     Validation: {
-//       screen: Validation,
-//     },
-//     Profile: ProfileNavigation,
-//   },
-//   {
-//     initialRouteName: 'Profile',
-//     defaultNavigationOptions: ({ navigation: { state } }) => ({
-//       tabBarIcon: ({ tintColor }) => renderTabBarIcon(tintColor, state),
-//     }),
-//     tabBarOptions: {
-//       activeTintColor: 'rgb(87,143,255)',
-//       inactiveTintColor: 'rgb(210,212,217)',
-//     },
-//   }
-// )
+function LoadingScreen({ navigation }) {
+  async function fetchAsyncStorage() {
+    try {
+      const privateKey = await AsyncStorage.getItem('@private_key')
+      console.info(privateKey)
+      navigation.navigate(privateKey ? 'App' : 'Auth')
+    } catch (error) {
+      Toast.showToast('Something went wrong')
+    }
+  }
+  useEffect(() => {
+    fetchAsyncStorage()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#fff',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <ActivityIndicator size="large" color={Colors.accent} />
+    </View>
+  )
+}
+
 const MainNavigator = createSwitchNavigator(
   {
+    Loading: LoadingScreen,
     Auth: ImportPrivateKeyNavigation,
     App: ProfileNavigation,
   },
   {
-    initialRouteName: 'Auth',
+    initialRouteName: 'App',
   }
 )
 

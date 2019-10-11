@@ -2,7 +2,7 @@ import React from 'react'
 import { Image, View } from 'react-native'
 import PropTypes from 'prop-types'
 
-import Colors from '../../utils'
+import { Colors } from '../../utils'
 
 export default function Avatar({
   size,
@@ -11,9 +11,9 @@ export default function Avatar({
   ...otherProps
 }) {
   function renderColor() {
-    if (offline) return '#ff6666'
-    if (syncing !== null && syncing) return '#ffa366'
-    if (!offline && !syncing) return '#27d980'
+    if (offline) return Colors.danger
+    if (syncing !== null && syncing) return Colors.orange
+    if (!offline && !syncing) return Colors.green
   }
 
   const src = address
@@ -21,7 +21,14 @@ export default function Avatar({
     : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
 
   return (
-    <View>
+    <View
+      style={{
+        borderRadius: size / 3,
+        borderWidth: 0.5,
+        borderColor: Colors.lightGrey,
+        padding: 5,
+      }}
+    >
       <Image
         source={{ uri: src }}
         width={size}

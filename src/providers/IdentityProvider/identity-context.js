@@ -75,15 +75,6 @@ export default function IdentityProvider({ children }) {
 
   useEffect(() => {
     setIdentity(result)
-    console.info(result)
-    // async function fetchIdentity() {
-
-    //   if (result) {
-    //     setIdentity(result)
-    //   }
-    // }
-
-    // fetchIdentity()
   }, [result])
 
   const canSubmitFlip =

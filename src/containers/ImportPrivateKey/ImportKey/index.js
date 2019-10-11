@@ -52,7 +52,6 @@ export default function ImportPrivateKey({ navigation }) {
         case RESULTS.UNAVAILABLE:
         case RESULTS.BLOCKED:
         case RESULTS.DENIED:
-          console.info('blocked')
           try {
             await openSettings()
           } catch (error) {
@@ -74,7 +73,7 @@ export default function ImportPrivateKey({ navigation }) {
           })
           return
         default: {
-          console.info('d')
+          return
         }
       }
     } catch (error) {
@@ -126,21 +125,20 @@ export default function ImportPrivateKey({ navigation }) {
           <View>
             <Input
               ref={textInputRef}
-              title="Encoded Key"
               placeholder="Encoded key"
               blurOnSubmit
-              defaultValue=""
-              value={value}
               returnKeyType="done"
               onChange={text => setValue(text)}
               icon={scannerIcon}
+              value={value}
+              style={{ width: '90%' }}
               onPressIcon={handlePressScannerIcon}
             />
             <View style={{ marginTop: 16 }}>
               <Button
                 title="Proceed"
                 onPress={handleNavigateToPassword}
-                disabled={value === '' && true}
+                disabled={!value}
               />
             </View>
           </View>

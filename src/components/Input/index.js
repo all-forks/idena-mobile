@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TextInput, Text, Image, TouchableOpacity } from 'react-native'
+import { View, TextInput, Image, TouchableOpacity } from 'react-native'
 import PropTypes from 'prop-types'
 
 import styles from './styles'
@@ -8,22 +8,16 @@ export default function Input({
   onChange,
   placeholder,
   icon,
-  title,
+  style,
   onPressIcon,
   ...otherProps
 }) {
   function handleChangeText(text) {
-    if (!text) return
     onChange(text)
   }
 
   return (
     <View style={styles.inputContainer}>
-      {title && (
-        <View style={{ paddingTop: 5 }}>
-          <Text style={styles.title}>{title}</Text>
-        </View>
-      )}
       <View
         style={{
           flexDirection: 'row',
@@ -34,6 +28,7 @@ export default function Input({
         <TextInput
           onChangeText={handleChangeText}
           placeholder={placeholder}
+          style={style}
           {...otherProps}
         />
         {icon && (
@@ -51,4 +46,5 @@ Input.propTypes = {
   onPressIcon: PropTypes.func,
   placeholder: PropTypes.string.isRequired,
   icon: PropTypes.any,
+  style: PropTypes.object,
 }

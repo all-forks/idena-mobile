@@ -10,7 +10,7 @@ export const InviteStateContext = createContext()
 
 export default function InviteProvider({ children }) {
   const [activationCode, setActivationCode] = useState()
-  const [activeTx, setActivatonTx] = useState()
+  const [activeTx, setActivatonTx] = useState('')
 
   const identity = useIndentityState()
 
@@ -18,21 +18,17 @@ export default function InviteProvider({ children }) {
 
   async function activateInvite(code) {
     const { address } = identity
-    const response = await activateInviteCode(code, address)
+    const { result, error } = await activateInviteCode(code, address)
 
-    if (response === undefined) {
-      console.log('error', response)
+    if (error) {
+      throw error
     }
-
-    alert(response)
 
     if (code) {
       setActivationCode(code)
     }
 
-    setActivatonTx(response)
-
-    console.log(response)
+    setActivatonTx(result)
   }
 
   return (

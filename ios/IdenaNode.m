@@ -19,20 +19,31 @@ RCT_EXPORT_METHOD(start:(RCTPromiseResolveBlock)resolve
 {
   NSString *filePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
   
-  NSString* res = NodeStartMobileNode(filePath, @"");
+  NSDictionary *configDictionary = @{ @"P2P": @{ @"MaxPeers": @6, @"DialRatio": @2 },
+    @"IpfsConf": @{
+      @"LowWater": @5,
+      @"HighWater": @10,
+      @"GracePeriod": @"1m0s",
+      @"ReproviderInterval": @"0",
+      @"Routing": @"dhtclient",
+    }
+};
+  
+  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:configDictionary options:NSJSONWritingPrettyPrinted error:nil];
+  NSString *config = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+  NSString* res = NodeStartMobileNode(filePath, config);
   
   resolve(res);
-}
+};
 
 RCT_EXPORT_METHOD(
                   provideMobileKey:(NSString *)key password:(NSString *)password
                   resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject
-)
+                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   NSString *filePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
   NSString *res = NodeProvideMobileKey(filePath, @"", key, password);
-
+  
   resolve(res);
 
 }

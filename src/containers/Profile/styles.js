@@ -110,7 +110,7 @@ export default StyleSheet.create({
     color: 'rgb(255, 255, 255)',
   },
   formContainer: {
-    marginVertical: 25,
+    marginVertical: 0,
   },
   formHeader: {
     marginBottom: 15,
@@ -128,7 +128,6 @@ export default StyleSheet.create({
     marginBottom: 25,
     // padding: 20,
     paddingVertical: 20,
-    paddingHorizontal: 10,
   },
   profileInfoRow: {
     flexDirection: 'row',
