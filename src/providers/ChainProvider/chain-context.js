@@ -24,7 +24,7 @@ function chainReducer(state, action) {
     case FETCH_SYNC_REQUEST: {
       return {
         ...state,
-        offline: true,
+        offline: false,
         syncing: false,
       }
     }

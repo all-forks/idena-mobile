@@ -14,13 +14,11 @@ export default function StatsBoard({
   balance,
 }) {
   function calcScores() {
-    return (
-      totalShortFlipPoints >= 0 &&
-      totalQualifiedFlips >= 0 &&
-      `${totalShortFlipPoints}/${totalQualifiedFlips} (${Math.round(
-        (totalShortFlipPoints / totalQualifiedFlips) * 10000
-      ) / 100}%)`
-    )
+    return totalShortFlipPoints > 0 && totalQualifiedFlips > 0
+      ? `${totalShortFlipPoints}/${totalQualifiedFlips} (${Math.round(
+          (totalShortFlipPoints / totalQualifiedFlips) * 10000
+        ) / 100}%)`
+      : '0/0 0%'
   }
 
   const baseArr = [
@@ -30,11 +28,11 @@ export default function StatsBoard({
     },
     {
       title: 'Balance',
-      value: `${balance >= 0 && balance} DNA`,
+      value: `${balance >= 0 && balance.toString().slice(0, 8)} DNA`,
     },
     {
       title: 'Stake',
-      value: `${stake >= 0 && stake} DNA`,
+      value: `${stake >= 0 && stake.toString().slice(0, 8)} DNA`,
     },
   ]
 

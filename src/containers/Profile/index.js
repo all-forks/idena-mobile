@@ -6,28 +6,28 @@ import {
   TouchableOpacity,
   Clipboard,
   Linking,
-  Image,
 } from 'react-native'
 import PropTypes from 'prop-types'
 import Modal from 'react-native-modal'
-import dayjs from 'dayjs'
 import QRCode from 'react-native-qrcode-svg'
 
-import newIcon from '../../assets/icons/new/new2x.png'
-
-import { Avatar, LoadingIndicator, Button, Input } from '../../components'
-import ActivationForm from './components/ActivationForm/activation-form'
-import StatsBoard from './components/StatsBoard/stats-board'
+import { LoadingIndicator } from '../../components'
+import {
+  ProfileHeader,
+  ActivationForm,
+  StatsBoard,
+  FlipActions,
+  MiningStatus,
+} from './components'
 
 import {
   useInviteDispatch,
   useIdentityState,
   useChainState,
+  useEpochState,
 } from '../../providers'
 
 import { usePoll, useRpc } from '../../../lib'
-
-import { EpochPeriod } from '../../../validation'
 
 import { getBalance } from '../../../api'
 
@@ -38,21 +38,25 @@ import styles from './styles'
 function Profile({ navigation }) {
   // NativeModules.IdenaNode.start()
 
-  const [{ result: identity }] = usePoll(useRpc('dna_identity'), 1000 * 1)
-  const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 10)
+  const { canActivateInvite, identity } = useIdentityState()
+  // const { epoch } = useEpochState()
+  const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 5)
+  // console.info(epoch)
   const [{ result: accounts }] = usePoll(useRpc('account_list'), 1000 * 10)
-  const { canActivateInvite } = useIdentityState()
-  const { syncing, offline } = useChainState()
+
+  const { syncing } = useChainState()
 
   const [width, setWidth] = useState(0)
   const [balance, setBalance] = useState(0)
   const [isVisible, setToggleVisible] = useState(false)
   const [isVisibleQRCode, setToggleVisibleQRCode] = useState(false)
   const [isVisibleFlipModal, setToggleVisibleFlipModal] = useState(false)
+  const [isForceClosedModal, setForceCloseModal] = useState(false)
   const [inputValue, onChange] = useState('')
+
   const { activateInvite } = useInviteDispatch()
 
-  if (!identity || !epoch || !accounts) return <LoadingIndicator />
+  if (!identity && !epoch && !accounts) return <LoadingIndicator />
 
   const isNeedActivateInvite =
     (identity.state === IdentityStatus.Undefined ||
@@ -62,9 +66,18 @@ function Profile({ navigation }) {
   async function fetchBalance() {
     if (accounts) {
       if (accounts.length === 0) {
-        const response = await getBalance(identity.address)
-        setBalance(response.balance)
-        return
+        try {
+          const response = await getBalance(
+            !identity.address
+              ? '0xcf0cf37a6e4a8e76e26db95f9eb5f3c73d122257'
+              : identity.address
+          )
+          setBalance(response.balance)
+          return
+        } catch (error) {
+          console.info(error)
+          return
+        }
       }
 
       const balancePromises = accounts.map(account =>
@@ -129,86 +142,12 @@ function Profile({ navigation }) {
     }
   }
 
-  function renderFlipHeader() {
-    const { totalQualifiedFlips, state } = identity
-
-    return [IdentityStatus.Verified, IdentityStatus.Newbie].includes(state) ? (
-      <View style={styles.flipsContainer}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={[styles.flipItem, { width, padding: 10 }]}
-          onPress={handleCreateNewFlip}
-        >
-          <View>
-            <Image
-              source={newIcon}
-              style={{ width: 20, height: 20 }}
-              resizeMode="contain"
-            />
-            <Text style={styles.flipTitle}>New flip</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={handleNavigateToDrafts}
-          style={[styles.flipItem, { width, flex: 0.67 }]}
-        >
-          <View style={{ backgroundColor: Colors.gray }}>
-            <View style={{ padding: 10 }}>
-              <Text style={styles.flipTitle}>
-                {totalQualifiedFlips === 1 ? 'Draft' : 'Drafts'}
-              </Text>
-              <Text style={styles.flipText}>{totalQualifiedFlips} flips</Text>
-            </View>
-          </View>
-          {/* {profileFlipAvatar ? (
-            <ImageBackground
-              source={profileFlipAvatar}
-              resizeMode="cover"
-              borderRadius={16}
-              style={styles.flipImage}
-            >
-              <View style={{ padding: 10 }}>
-                <Text style={styles.flipTitle}>
-                  {totalQualifiedFlips === 1 ? 'Draft' : 'Drafts'}
-                </Text>
-                <Text style={styles.flipText}>{totalQualifiedFlips} flips</Text>
-              </View>
-            </ImageBackground>
-          ) */}
-        </TouchableOpacity>
-      </View>
-    ) : null
-  }
-
   function handleCopyAddress(address) {
     Clipboard.setString(address)
 
     Toast.showToast('Copied to Clipboard!')
 
     setToggleVisibleQRCode(!isVisibleQRCode)
-  }
-
-  function renderActivationForm() {
-    return (
-      <View style={styles.formContainer}>
-        <View style={styles.formActionsHandlers}>
-          <View style={{ marginBottom: 16 }}>
-            <Input
-              onChange={onChange}
-              placeholder="Invitation code"
-              style={{ width: '100%' }}
-            />
-          </View>
-          <Button
-            onPress={handlePress}
-            title="Activate"
-            disabled={!inputValue}
-          />
-        </View>
-      </View>
-    )
   }
 
   function renderBodyQRCode() {
@@ -257,6 +196,7 @@ function Profile({ navigation }) {
       }
       case 'Synchronize': {
         setToggleVisible(!isVisible)
+        setForceCloseModal(true)
         break
       }
       default: {
@@ -266,7 +206,6 @@ function Profile({ navigation }) {
   }
 
   function renderBodySynchronize() {
-    // const { offline }
     return (
       <View style={[styles.modalLg, styles.modal]}>
         <Text style={[styles.text, { fontSize: 20, textAlign: 'left' }]}>
@@ -315,85 +254,20 @@ function Profile({ navigation }) {
     )
   }
 
-  function renderCurrentTask() {
-    const { requiredFlips, flips, state } = identity
-
-    if (
-      epoch &&
-      epoch.nextValidation &&
-      epoch.currentPeriod === EpochPeriod.None
-    ) {
-      const numOfFlipsToSubmit = requiredFlips - (flips || []).length
-      const shouldSendFlips = numOfFlipsToSubmit > 0
-
-      if (shouldSendFlips) {
-        return (
-          <View style={styles.currentTasksContainer}>
-            <Text style={styles.currentTaskTitle}>
-              Current task: create {numOfFlipsToSubmit} flip
-              {numOfFlipsToSubmit > 1 ? 's' : ''}
-            </Text>
-          </View>
-        )
-      }
-
-      if (
-        (state === IdentityStatus.Undefined ||
-          state === IdentityStatus.Killed) &&
-        canActivateInvite
-      ) {
-        return null
-      }
-
-      return (
-        <View style={styles.currentTasksContainer}>
-          <Text style={styles.currentTaskTitle}>Wait for validation</Text>
-        </View>
-      )
-    }
-  }
-
   function handleTapAddress() {
     setToggleVisibleQRCode(true)
   }
 
-  const { state, address } = identity
+  const { state, online } = identity
 
   return (
     <>
       <ScrollView onLayout={handleLayout} style={styles.container}>
         <View>
-          <View style={styles.header}>
-            <View style={styles.userAvatarContainer}>
-              <Avatar
-                address={address}
-                size={96}
-                nodeStatus={{ offline, syncing }}
-              />
-            </View>
-
-            <Text style={styles.name}>My Identity</Text>
-
-            <TouchableOpacity
-              onPress={handleTapAddress}
-              style={{ paddingHorizontal: 48 }}
-            >
-              <Text style={styles.address}>{address}</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.actionInfoContainer}>
-            <View style={styles.nextValidationRow}>
-              <Text style={styles.profileInfoRowTitle}>Next validation</Text>
-              <Text style={styles.time}>
-                {epoch &&
-                  epoch.nextValidation &&
-                  epoch.currentPeriod === EpochPeriod.None &&
-                  `${dayjs(epoch.nextValidation).format('DD MMM [,] HH:mm')}`}
-              </Text>
-            </View>
-            {renderCurrentTask()}
-          </View>
+          <ProfileHeader
+            {...{ ...identity, epoch }}
+            handleTapAddress={handleTapAddress}
+          />
 
           {isNeedActivateInvite ? (
             <ActivationForm
@@ -402,21 +276,36 @@ function Profile({ navigation }) {
               inputValue={inputValue}
             />
           ) : (
-            renderFlipHeader()
+            <FlipActions
+              {...{ state, width }}
+              createNewFlip={handleCreateNewFlip}
+              handleNavigateToDrafts={handleNavigateToDrafts}
+            />
           )}
           <StatsBoard {...{ ...identity, balance }} />
+
+          <View
+            style={{
+              marginBottom: 25,
+              height: 1,
+              width: '100%',
+              backgroundColor: Colors.silver,
+            }}
+          />
+
+          <MiningStatus status={online} />
         </View>
       </ScrollView>
 
-      {/* <Modal
-        isVisible={syncing}
+      <Modal
+        isVisible={syncing && !isForceClosedModal}
         style={{ justifyContent: 'flex-end' }}
         onBackdropPress={() => {
           setToggleVisible(!isVisible)
         }}
       >
         {renderBodySynchronize()}
-      </Modal> */}
+      </Modal>
 
       <Modal
         isVisible={isVisibleQRCode}

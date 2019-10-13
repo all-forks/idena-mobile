@@ -11,7 +11,7 @@ export async function callRpc(method, ...params) {
       },
       body: JSON.stringify({
         method,
-        params,
+        params: params.length > 0 ? Object.values(params[0]) : params,
         id: 1,
       }),
     })
@@ -19,7 +19,6 @@ export async function callRpc(method, ...params) {
       const json = await resp.json()
       return json
     }
-    return { error: 'Network Request Failed' }
   } catch (error) {
     return { error }
   }
@@ -53,7 +52,12 @@ export async function submitLongAnswers(answers, nonce, epoch) {
 }
 
 export async function getBalance(address) {
-  const { result } = await callRpc('dna_getBalance', { address })
+  console.info('Address', address)
+  const { result, error } = await callRpc('dna_getBalance', { address })
+  console.info(result, error)
+  if(error) {
+    throw error
+  }
   return result
 }
 

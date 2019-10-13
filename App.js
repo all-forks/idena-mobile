@@ -61,6 +61,7 @@ import {
   InviteProvider,
   IdentityProvider,
   ChainProvider,
+  EpochProvider as NewEpochProvider,
 } from './src/providers'
 
 import { EXTRA_FLIPS_DELAY } from './config'
@@ -75,12 +76,8 @@ function Screen({ children }) {
     <PaperProvider>
       <AppProviders>
         <View style={styles.full}>
-          {/* <StatusBar barStyle="dark-content" /> */}
           <SafeAreaView style={styles.full}>
-            <View
-              // contentInsetAdjustmentBehavior="automatic"
-              style={styles.scrollView}
-            >
+            <View style={styles.scrollView}>
               <WithValidation>{children}</WithValidation>
             </View>
           </SafeAreaView>
@@ -94,11 +91,13 @@ export function AppProviders({ children }) {
   return (
     <TimingProvider>
       <EpochProvider>
+        {/* <NewEpochProvider> */}
         <IdentityProvider>
           <InviteProvider>
             <ChainProvider>{children}</ChainProvider>
           </InviteProvider>
         </IdentityProvider>
+        {/* </NewEpochProvider> */}
       </EpochProvider>
     </TimingProvider>
   )

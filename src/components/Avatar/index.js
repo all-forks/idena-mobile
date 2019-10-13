@@ -16,9 +16,7 @@ export default function Avatar({
     if (!offline && !syncing) return Colors.green
   }
 
-  const src = address
-    ? `https://robohash.org/${address}`
-    : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
+  const src = address ? `https://robohash.org/${address}` : ''
 
   return (
     <View
