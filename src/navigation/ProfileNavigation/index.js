@@ -8,6 +8,8 @@ import {
 import backIcon from '../../assets/icons/back/back-button2x.png'
 
 import { Screen, SafeArea } from '../../components'
+// eslint-disable-next-line import/no-cycle
+// import { Screen } from '../../../App'
 import { Profile, Flip, Drafts } from '../../containers'
 
 import { Colors } from '../../utils'

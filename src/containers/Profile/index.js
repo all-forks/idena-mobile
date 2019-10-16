@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Clipboard,
   Linking,
+  NativeModules,
 } from 'react-native'
 import PropTypes from 'prop-types'
 import Modal from 'react-native-modal'
@@ -36,12 +37,10 @@ import { Toast, IdentityStatus, Colors } from '../../utils'
 import styles from './styles'
 
 function Profile({ navigation }) {
-  // NativeModules.IdenaNode.start()
+  NativeModules.IdenaNode.start()
 
-  const { canActivateInvite, identity } = useIdentityState()
-  // const { epoch } = useEpochState()
+  const { canActivateInvite, canMine, identity } = useIdentityState()
   const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 5)
-  // console.info(epoch)
   const [{ result: accounts }] = usePoll(useRpc('account_list'), 1000 * 10)
 
   const { syncing } = useChainState()
@@ -60,19 +59,16 @@ function Profile({ navigation }) {
 
   const isNeedActivateInvite =
     (identity.state === IdentityStatus.Undefined ||
-      identity.state === IdentityStatus.Killed) &&
+      identity.state === IdentityStatus.Killed ||
+      identity.state === IdentityStatus.Invite) &&
     canActivateInvite
 
   async function fetchBalance() {
     if (accounts) {
       if (accounts.length === 0) {
         try {
-          const response = await getBalance(
-            !identity.address
-              ? '0xcf0cf37a6e4a8e76e26db95f9eb5f3c73d122257'
-              : identity.address
-          )
-          setBalance(response.balance)
+          const response = await getBalance(identity.address)
+          setBalance(response)
           return
         } catch (error) {
           console.info(error)
@@ -122,7 +118,12 @@ function Profile({ navigation }) {
     if (!identity) return
 
     try {
-      await activateInvite(inputValue, address)
+      const { result, error } = await activateInvite(inputValue)
+
+      if (error) {
+        Toast.showToast(error.message)
+        return
+      }
     } catch (error) {
       Toast.showToast(error.message)
     }
@@ -282,22 +283,25 @@ function Profile({ navigation }) {
               handleNavigateToDrafts={handleNavigateToDrafts}
             />
           )}
-          <StatsBoard {...{ ...identity, balance }} />
 
-          <View
-            style={{
-              marginBottom: 25,
-              height: 1,
-              width: '100%',
-              backgroundColor: Colors.silver,
-            }}
-          />
+          <StatsBoard balance={balance} identity={identity} />
 
-          <MiningStatus status={online} />
+          {canMine && online && (
+            <View
+              style={{
+                marginBottom: 25,
+                height: 1,
+                width: '100%',
+                backgroundColor: Colors.silver,
+              }}
+            />
+          )}
+
+          <MiningStatus status={online} identity={identity} />
         </View>
       </ScrollView>
 
-      <Modal
+      {/* <Modal
         isVisible={syncing && !isForceClosedModal}
         style={{ justifyContent: 'flex-end' }}
         onBackdropPress={() => {
@@ -305,7 +309,7 @@ function Profile({ navigation }) {
         }}
       >
         {renderBodySynchronize()}
-      </Modal>
+      </Modal> */}
 
       <Modal
         isVisible={isVisibleQRCode}

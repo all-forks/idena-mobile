@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { View, KeyboardAvoidingView, Text, NativeModules } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
@@ -7,27 +7,10 @@ import { Toast } from '../../../utils'
 import { Input, Button } from '../../../components'
 
 import globalImportStyles from '../styles'
-import callRpc from '../../../api/api'
 
 export default function EnterPassword({ navigation }) {
   const [textInputValue, onChangeText] = useState('')
   const [isLoading, setLoading] = useState(false)
-
-  useEffect(() => {
-    // fetchRequest()
-  }, [])
-
-  async function fetchRequest() {
-    try {
-      const result = await callRpc('dna_activateInvite', {
-        key: '3213212',
-        address: '0xcf0cf37a6e4a8e76e26db95f9eb5f3c73d122257',
-      })
-      console.info(result)
-    } catch (error) {
-      console.info(error)
-    }
-  }
 
   async function handlePress() {
     const { IdenaNode } = NativeModules
@@ -35,12 +18,17 @@ export default function EnterPassword({ navigation }) {
 
     try {
       const message = await IdenaNode.provideMobileKey(
-        navigation.state.params.encodedPrivateKey,
+        // navigation.state.params.encodedPrivateKey,
+        'bb21e22af8c84a0b061fa19930992cd602e51e64f04f2c2b8448da29499913583971c82fc5646d658a4ca5d84770c29d8f2dd8d37f75deba119ca902',
         textInputValue
       )
-      console.info(message)
+
       if (message !== 'done') {
-        Toast.showToast(message)
+        Toast.showToast(
+          message === 'key is already exists'
+            ? 'key is already exists or invalid private key or password'
+            : message
+        )
         setLoading(false)
         return
       }
@@ -54,20 +42,20 @@ export default function EnterPassword({ navigation }) {
       const message = await IdenaNode.start()
 
       if (message !== 'started') {
-        Toast.showToast(message)
+        Toast.showToast(
+          message === 'key is already exists'
+            ? 'key is already exists or invalid private key or password'
+            : message
+        )
         setLoading(false)
         return
       }
-
-      console.info(message)
-
-      // setLoading(false)
 
       navigation.navigate('App')
 
       try {
         await AsyncStorage.setItem(
-          '@private_key',
+          '@isLoggedIn',
           navigation.state.params.encodedPrivateKey
         )
       } catch (error) {

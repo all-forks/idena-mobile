@@ -38,7 +38,6 @@ export default StyleSheet.create({
   },
   actionInfoContainer: {
     marginTop: 56,
-    marginBottom: 24,
   },
   nextValidationRow: {
     flexDirection: 'row',
@@ -54,7 +53,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgb(245,246,247)',
     borderRadius: 16,
-    marginTop: 20,
+    marginVertical: 20,
     paddingVertical: 20,
     paddingHorizontal: 38,
   },
@@ -110,7 +109,7 @@ export default StyleSheet.create({
     color: 'rgb(255, 255, 255)',
   },
   formContainer: {
-    marginVertical: 0,
+    marginTop: 20,
   },
   formHeader: {
     marginBottom: 15,
@@ -127,7 +126,7 @@ export default StyleSheet.create({
     marginTop: 21,
     marginBottom: 25,
     // padding: 20,
-    paddingVertical: 20,
+    // paddingVertical: 20,
   },
   profileInfoRow: {
     flexDirection: 'row',

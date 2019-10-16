@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import {
+  ActivityIndicator,
   SafeAreaView,
   StyleSheet,
   ScrollView,
@@ -7,14 +8,9 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  NativeModules,
 } from 'react-native'
 
-import {
-  Provider as PaperProvider,
-  ActivityIndicator,
-  Card,
-} from 'react-native-paper'
+import { Provider as PaperProvider, Card } from 'react-native-paper'
 
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import Icon from 'react-native-vector-icons/MaterialIcons'
@@ -23,6 +19,8 @@ import { createSwitchNavigator, createAppContainer } from 'react-navigation'
 import GlobalFont from 'react-native-global-font'
 import AsyncStorage from '@react-native-community/async-storage'
 import { useRpc, useInterval, useTimeout } from './lib'
+
+import { LoadingIndicator } from './src/components'
 
 // Navigation
 import ProfileNavigation from './src/navigation/ProfileNavigation'
@@ -61,7 +59,7 @@ import {
   InviteProvider,
   IdentityProvider,
   ChainProvider,
-  EpochProvider as NewEpochProvider,
+  // EpochProvider,
 } from './src/providers'
 
 import { EXTRA_FLIPS_DELAY } from './config'
@@ -91,30 +89,24 @@ export function AppProviders({ children }) {
   return (
     <TimingProvider>
       <EpochProvider>
-        {/* <NewEpochProvider> */}
         <IdentityProvider>
           <InviteProvider>
             <ChainProvider>{children}</ChainProvider>
           </InviteProvider>
         </IdentityProvider>
-        {/* </NewEpochProvider> */}
       </EpochProvider>
     </TimingProvider>
   )
 }
 
 export function WithValidation({ children }) {
-  const epoch = useEpochState()
-
-  const isValidationRunning =
-    epoch &&
-    [EpochPeriod.ShortSession, EpochPeriod.LongSession].includes(
-      epoch.currentPeriod
-    )
+  const { isValidationRunning } = useEpochState()
 
   return (
     <View style={styles.body}>
-      {!isValidationRunning && children}
+      {!isValidationRunning && (
+        <ValidationProvider>{children}</ValidationProvider>
+      )}
       {isValidationRunning && (
         <ValidationProvider>
           <ValidationScreen />
@@ -124,37 +116,8 @@ export function WithValidation({ children }) {
   )
 }
 
-export function Profile() {
-  // const [{ result: identity }] = usePoll(useRpc('dna_identity'), 1000 * 1)
-
-  if (!identity) {
-    return (
-      <Card style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Loading...</Text>
-      </Card>
-    )
-  }
-
-  const { address, state, totalShortFlipPoints, totalQualifiedFlips } = identity
-
-  return (
-    <Card style={styles.sectionContainer}>
-      <Text style={styles.sectionTitle}>My Idena</Text>
-      <Text style={styles.sectionDescription}>{address}</Text>
-      <Text style={styles.sectionDescription}>{state}</Text>
-      {totalQualifiedFlips > 0 && (
-        <Text style={styles.sectionDescription}>
-          {`${totalShortFlipPoints} out of ${totalQualifiedFlips} (${Number(
-            totalShortFlipPoints / totalQualifiedFlips
-          ).toLocaleString(undefined, { style: 'percent' })}) `}
-        </Text>
-      )}
-    </Card>
-  )
-}
-
 export function BeforeValidation() {
-  const epoch = useEpochState()
+  const { epoch } = useEpochState()
 
   const [text, setText] = React.useState()
 
@@ -249,7 +212,7 @@ function ValidationScreen() {
   }
 
   return (
-    <View style={styles.validationContainer}>
+    <View style={[styles.validationContainer]}>
       <View style={styles.validationHeading}>
         <Text style={styles.validationTitle}>Validation session</Text>
         <Text style={styles.validationParagraph}>
@@ -437,7 +400,7 @@ function FlipImage({ source, width, height, style }) {
 
 function Timer({ type }) {
   let seconds = useValidationTimer()
-  const epoch = useEpochState()
+  const { epoch } = useEpochState()
   const timing = useTimingState()
 
   if (!epoch || !timing) {
@@ -536,8 +499,7 @@ function renderTabBarIcon(tintColor, state) {
 function LoadingScreen({ navigation }) {
   async function fetchAsyncStorage() {
     try {
-      const privateKey = await AsyncStorage.getItem('@private_key')
-      console.info(privateKey)
+      const privateKey = await AsyncStorage.getItem('@isLoggedIn')
       navigation.navigate(privateKey ? 'App' : 'Auth')
     } catch (error) {
       Toast.showToast('Something went wrong')
@@ -556,7 +518,7 @@ function LoadingScreen({ navigation }) {
         alignItems: 'center',
       }}
     >
-      <ActivityIndicator size="large" color={Colors.accent} />
+      <LoadingIndicator />
     </View>
   )
 }
@@ -568,7 +530,7 @@ const MainNavigator = createSwitchNavigator(
     App: ProfileNavigation,
   },
   {
-    initialRouteName: 'App',
+    initialRouteName: 'Loading',
   }
 )
 

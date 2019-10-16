@@ -24,7 +24,55 @@ const IDENTITY_GET_REQUEST = 'IDENTITY_GET_REQUEST'
 const IDENTITY_GET_SUCCESS = 'IDENTITY_GET_SUCCESS'
 const IDENTITY_GET_FAILURE = 'IDENTITY_GET_FAILURE'
 
-const initialState = null
+const initialState = {
+  flipKeyWordPairs: [
+    {
+      words: [2216, 1277],
+      used: true,
+      id: 0,
+    },
+    {
+      words: [2210, 3223],
+      used: false,
+      id: 1,
+    },
+    {
+      words: [176, 2865],
+      used: false,
+      id: 2,
+    },
+    {
+      words: [998, 1263],
+      used: false,
+      id: 3,
+    },
+    {
+      words: [328, 2101],
+      used: false,
+      id: 4,
+    },
+    {
+      words: [1350, 427],
+      used: false,
+      id: 5,
+    },
+    {
+      words: [504, 2537],
+      used: false,
+      id: 6,
+    },
+    {
+      words: [2342, 1979],
+      used: false,
+      id: 7,
+    },
+    {
+      words: [1952, 2221],
+      used: false,
+      id: 8,
+    },
+  ],
+}
 
 function identityReducer(state, action) {
   switch (action.type) {

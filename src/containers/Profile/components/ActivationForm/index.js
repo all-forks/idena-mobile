@@ -3,11 +3,13 @@ import { View } from 'react-native'
 import PropTypes from 'prop-types'
 
 import { Input, Button } from '../../../../components'
+import { useInviteState } from '../../../../providers'
 
 import styles from '../../styles'
 
 export default function ActivationForm({ onPress, onChange, inputValue }) {
-  //   handle
+  const { isLoading } = useInviteState()
+
   return (
     <View style={styles.formContainer}>
       <View style={styles.formActionsHandlers}>
@@ -21,7 +23,7 @@ export default function ActivationForm({ onPress, onChange, inputValue }) {
         <Button
           onPress={() => onPress()}
           title="Activate"
-          disabled={!inputValue}
+          disabled={isLoading}
         />
       </View>
     </View>

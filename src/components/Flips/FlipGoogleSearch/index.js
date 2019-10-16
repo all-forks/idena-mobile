@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Animated, Easing, Dimensions } from 'react-native'
+import { Animated, Easing } from 'react-native'
 import { WebView } from 'react-native-webview'
 import PropTypes from 'prop-types'
 
 import { ActivityIndicator } from 'react-native-paper'
 import styles from './styles'
+
+const htmlPicker = require('../../../assets/picker/picker.html')
 
 export default function FlipGoogleSearch({ onSelect, isOpened }) {
   const [heightS, _] = useState(new Animated.Value(0))
@@ -27,7 +29,7 @@ export default function FlipGoogleSearch({ onSelect, isOpened }) {
     <Animated.View style={[styles.form, { height }]}>
       <WebView
         originWhiteList={['*']}
-        source={{ uri: 'http://localhost:5555/demo' }}
+        source={htmlPicker}
         onMessage={event => {
           onSelect(event.nativeEvent.data)
         }}

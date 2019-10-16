@@ -7,6 +7,8 @@ import {
   Image,
   Keyboard,
   TouchableWithoutFeedback,
+  Dimensions,
+  Platform,
 } from 'react-native'
 import {
   check,
@@ -95,7 +97,14 @@ export default function ImportPrivateKey({ navigation }) {
           { justifyContent: 'flex-start', marginBottom: 0 },
         ]}
         behavior="position"
-        keyboardVerticalOffset={-100}
+        keyboardVerticalOffset={
+          // eslint-disable-next-line no-nested-ternary
+          Platform.OS === 'ios'
+            ? Dimensions.get('window').width >= 375
+              ? -200
+              : -150
+            : 0
+        }
       >
         <View style={{ marginTop: 36 }}>
           <View

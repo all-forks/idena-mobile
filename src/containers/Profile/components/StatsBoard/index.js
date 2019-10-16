@@ -6,11 +6,7 @@ import { IdentityStatus } from '../../../../utils'
 import styles from '../../styles'
 
 export default function StatsBoard({
-  age,
-  state,
-  stake,
-  totalShortFlipPoints,
-  totalQualifiedFlips,
+  identity: { age, state, totalShortFlipPoints, totalQualifiedFlips },
   balance,
 }) {
   function calcScores() {
@@ -18,21 +14,39 @@ export default function StatsBoard({
       ? `${totalShortFlipPoints}/${totalQualifiedFlips} (${Math.round(
           (totalShortFlipPoints / totalQualifiedFlips) * 10000
         ) / 100}%)`
-      : '0/0 0%'
+      : '0%'
+  }
+
+  function getFormattedNumber(number) {
+    return Number(number).toFixed(
+      Math.trunc(Number(number)) === Number(number) ? 2 : 8
+    )
+  }
+
+  function renderBalanceData(data) {
+    return data && Number(data) >= 0
+      ? `${getFormattedNumber(data)} DNA`
+      : '0.00 DNA'
   }
 
   const baseArr = [
     {
       title: 'Status',
-      value: state === IdentityStatus.Undefined ? 'Not validated' : state,
+      value:
+        state === IdentityStatus.Undefined ||
+        state === IdentityStatus.Invite ||
+        state === IdentityStatus.Killed ||
+        !state
+          ? 'Not validated'
+          : state,
     },
     {
       title: 'Balance',
-      value: `${balance >= 0 && balance.toString().slice(0, 8)} DNA`,
+      value: renderBalanceData(balance.balance),
     },
     {
       title: 'Stake',
-      value: `${stake >= 0 && stake.toString().slice(0, 8)} DNA`,
+      value: renderBalanceData(balance.stake),
     },
   ]
 
@@ -43,7 +57,8 @@ export default function StatsBoard({
     },
     {
       title: 'Age',
-      value: `${age} ${parseInt(age) === 1 ? 'epoch' : 'epochs'}`,
+      // eslint-disable-next-line no-nested-ternary
+      value: age ? `${age} epoch(s)` : '0 epoch(s)',
     },
   ]
 
@@ -67,10 +82,6 @@ export default function StatsBoard({
 }
 
 StatsBoard.propTypes = {
-  age: PropTypes.number,
-  state: PropTypes.string,
-  stake: PropTypes.number,
-  totalShortFlipPoints: PropTypes.number,
-  totalQualifiedFlips: PropTypes.number,
-  balance: PropTypes.number,
+  balance: PropTypes.object,
+  identity: PropTypes.object,
 }

@@ -22,7 +22,7 @@ import styles from './styles'
 function Flip({ navigation }) {
   console.disableYellowBox = true
   const [activeStep, setStep] = useState(0)
-  const identity = useIdentityState()
+  const { identity } = useIdentityState()
 
   const { flips } = useFlips()
 

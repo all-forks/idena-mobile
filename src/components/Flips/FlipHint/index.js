@@ -11,7 +11,7 @@ import styles from './styles'
 export default function FlipHint({ onChange, hint, isLoading }) {
   // eslint-disable-next-line no-unused-vars
   let carouselRef = useRef()
-  console.info(hint)
+  console.info('hint', hint)
 
   function handlePressMoreWords() {
     if (carouselRef.currentIndex === hint.length - 1) {

@@ -4,7 +4,8 @@ import { useInterval } from '../../../lib'
 import { callRpc } from '../../../api'
 
 export const EpochStateContext = createContext()
-export const EpochDispatchContext = createContext()
+const { Provider } = EpochStateContext
+// export const EpochDispatchContext = createContext()
 
 const initialState = null
 
@@ -12,7 +13,7 @@ const EPOCH_GET_REQUEST = 'EPOCH_GET_REQUEST'
 const EPOCH_GET_SUCCESS = 'EPOCH_GET_SUCCESS'
 const EPOCH_GET_FAILURE = 'EPOCH_GET_FAILURE'
 
-function epochReducer(state, action) {
+function epochReducer(state = initialState, action) {
   switch (action.type) {
     case EPOCH_GET_REQUEST:
       return { ...state, isFetching: true }
@@ -41,17 +42,11 @@ export default function EpochProvider({ children }) {
         dispatch({ type: EPOCH_GET_FAILURE, payload: error })
       }
     },
-    1 * 5000,
+    1 * 1000,
     true
   )
 
-  return (
-    <EpochStateContext.Provider value={{ epoch: state }}>
-      {/* <EpochDispatchContext.Provider value=> */}
-      {children}
-      {/* </EpochDispatchContext.Provider> */}
-    </EpochStateContext.Provider>
-  )
+  return <Provider value={state}>{children}</Provider>
 }
 
 EpochProvider.propTypes = {

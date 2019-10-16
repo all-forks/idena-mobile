@@ -2,6 +2,7 @@ import reactotron from 'reactotron-react-native'
 import { URL } from './config'
 
 export async function callRpc(method, ...params) {
+  if (method === 'dna_activateInvite') console.info(params)
   try {
     const resp = await fetch(URL, {
       method: 'POST',
@@ -11,7 +12,10 @@ export async function callRpc(method, ...params) {
       },
       body: JSON.stringify({
         method,
-        params: params.length > 0 ? Object.values(params[0]) : params,
+        params:
+          params.length > 0 && method !== 'dna_activateInvite'
+            ? Object.values(params[0])
+            : params,
         id: 1,
       }),
     })
@@ -22,6 +26,12 @@ export async function callRpc(method, ...params) {
   } catch (error) {
     return { error }
   }
+}
+
+function strip(obj) {
+  // eslint-disable-next-line no-param-reassign
+  Object.keys(obj).forEach(key => !obj[key] && delete obj[key])
+  return obj
 }
 
 export async function fetchFlipHashes(type) {
@@ -52,19 +62,19 @@ export async function submitLongAnswers(answers, nonce, epoch) {
 }
 
 export async function getBalance(address) {
-  console.info('Address', address)
+  // console.info('Address', address)
   const { result, error } = await callRpc('dna_getBalance', { address })
-  console.info(result, error)
-  if(error) {
+  // console.info(result, error)
+  if (error) {
     throw error
   }
   return result
 }
 
-export async function activateInviteCode(key, address) {
+export async function activateInviteCode(to, key) {
   const response = await callRpc('dna_activateInvite', {
+    to,
     key,
-    address,
   })
 
   return response

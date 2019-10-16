@@ -12,7 +12,19 @@ export const EpochPeriod = {
 const EpochStateContext = React.createContext()
 export function EpochProvider(props) {
   const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 1)
-  return <EpochStateContext.Provider value={epoch} {...props} />
+
+  const isValidationRunning =
+    epoch &&
+    [EpochPeriod.ShortSession, EpochPeriod.LongSession].includes(
+      epoch.currentPeriod
+    )
+
+  return (
+    <EpochStateContext.Provider
+      value={{ epoch, isValidationRunning }}
+      {...props}
+    />
+  )
 }
 
 export function useEpochState() {
