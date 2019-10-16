@@ -52,7 +52,6 @@ export default function InviteProvider({ children }) {
 
     try {
       const { result, error } = await activateInviteCode(address, inviteCode)
-      console.info(result)
 
       if (error) {
         console.info(error)

@@ -118,7 +118,7 @@ function Profile({ navigation }) {
     if (!identity) return
 
     try {
-      const { result, error } = await activateInvite(inputValue)
+      const { error } = await activateInvite(inputValue)
 
       if (error) {
         Toast.showToast(error.message)
