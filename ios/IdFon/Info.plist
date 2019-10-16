@@ -38,7 +38,7 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Idena would to use camera</string>
+	<string> Idena uses the camera to scan encoded private key.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

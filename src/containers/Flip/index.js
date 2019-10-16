@@ -1,7 +1,7 @@
 // Default imports
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { SafeAreaView, StatusBar } from 'react-native'
+import { Alert, SafeAreaView, StatusBar } from 'react-native'
 import {
   FlipStep,
   FlipStepper,
@@ -28,15 +28,8 @@ function Flip({ navigation }) {
 
   const publishedFlips = flips.filter(({ type }) => type === FlipType.Published)
 
-  console.info(identity)
-
   const [localFlip, setFlip] = useState({
-    pics: [
-      'https://placehold.it/480?text=1',
-      'https://placehold.it/480?text=2',
-      'https://placehold.it/480?text=3',
-      'https://placehold.it/480?text=4',
-    ],
+    pics: ['', '', '', ''],
     nextOrder: [],
     order: Array.from({ length: 4 }, (_, i) => i),
     hint: randomHint.getNextKeyWordsHint(
@@ -119,7 +112,7 @@ function Flip({ navigation }) {
     if (activeStep === steps.length - 1) return
 
     if (!localFlip.selectedWordPairs) {
-      alert('Choose pair')
+      Alert.alert('Choose pair')
       return
     }
 

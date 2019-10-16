@@ -1,6 +1,12 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { View, KeyboardAvoidingView, Text, NativeModules } from 'react-native'
+import {
+  View,
+  KeyboardAvoidingView,
+  Keyboard,
+  Text,
+  NativeModules,
+} from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
 import { Toast } from '../../../utils'
 
@@ -22,16 +28,21 @@ export default function EnterPassword({ navigation }) {
         textInputValue
       )
 
+      if (message !== 'done' && message.includes('error while decoding key')) {
+        Keyboard.dismiss()
+        Toast.showToast('Invalid private key or password')
+        setLoading(false)
+        return
+      }
+
       if (message !== 'done') {
-        Toast.showToast(
-          message === 'key is already exists'
-            ? 'key is already exists or invalid private key or password'
-            : message
-        )
+        Keyboard.dismiss()
+        Toast.showToast(message)
         setLoading(false)
         return
       }
     } catch (error) {
+      Keyboard.dismiss()
       Toast.showToast(error.message)
       setLoading(false)
       return
@@ -41,6 +52,7 @@ export default function EnterPassword({ navigation }) {
       const message = await IdenaNode.start()
 
       if (message !== 'started') {
+        Keyboard.dismiss()
         Toast.showToast(
           message === 'key is already exists'
             ? 'key is already exists or invalid private key or password'
