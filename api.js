@@ -2,7 +2,6 @@ import reactotron from 'reactotron-react-native'
 import { URL } from './config'
 
 export async function callRpc(method, ...params) {
-  if (method === 'dna_activateInvite') console.info(params)
   try {
     const resp = await fetch(URL, {
       method: 'POST',
@@ -76,6 +75,8 @@ export async function activateInviteCode(to, key) {
     to,
     key,
   })
+
+  console.info(response)
 
   return response
 }

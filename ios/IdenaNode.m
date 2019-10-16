@@ -31,7 +31,7 @@ RCT_EXPORT_METHOD(start:(RCTPromiseResolveBlock)resolve
     @"RPC": @{ @"HTTPPort": @9010},
     @"GenesisConf": @{
       @"GodAddress": @"0xcf0cf37a6e4a8e76e26db95f9eb5f3c73d122257",
-      @"FirstCeremonyTime": @1571145840
+      @"FirstCeremonyTime": @1571219334
     },
     @"Consensus": @{
       @"ProposerTheshold": @0.001,

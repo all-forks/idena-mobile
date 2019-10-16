@@ -49,7 +49,9 @@ export default function ImportPrivateKey({ navigation }) {
   async function handlePressScannerIcon() {
     try {
       await request(PERMISSIONS.IOS.CAMERA)
+
       const result = await check(PERMISSIONS.IOS.CAMERA)
+
       switch (result) {
         case RESULTS.UNAVAILABLE:
         case RESULTS.BLOCKED:

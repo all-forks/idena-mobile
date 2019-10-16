@@ -117,7 +117,6 @@ export default function IdentityProvider({ children }) {
 
     try {
       const { result, error } = await callRpc('dna_identity')
-      console.info(result)
       if (error) {
         dispatch({ type: IDENTITY_GET_FAILURE, payload: error })
         return

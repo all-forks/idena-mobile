@@ -18,8 +18,7 @@ export default function EnterPassword({ navigation }) {
 
     try {
       const message = await IdenaNode.provideMobileKey(
-        // navigation.state.params.encodedPrivateKey,
-        'bb21e22af8c84a0b061fa19930992cd602e51e64f04f2c2b8448da29499913583971c82fc5646d658a4ca5d84770c29d8f2dd8d37f75deba119ca902',
+        navigation.state.params.encodedPrivateKey,
         textInputValue
       )
 

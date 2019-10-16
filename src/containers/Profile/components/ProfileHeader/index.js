@@ -139,8 +139,6 @@ export default function ProfileHeader({
     )
   }
 
-  if (epoch && epoch.nextValidation) console.info(epoch.nextValidation)
-
   return (
     <>
       <View style={styles.header}>

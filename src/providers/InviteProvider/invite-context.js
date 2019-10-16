@@ -21,7 +21,7 @@ export default function InviteProvider({ children }) {
   useEffect(() => {}, [])
 
   useInterval(async () => {
-    if (activeTx && !isMining) {
+    if (activeTx !== '') {
       setMining(true)
       const { result, error } = await callRpc('bcn_transaction', {
         activeTx,
@@ -32,8 +32,6 @@ export default function InviteProvider({ children }) {
       }
 
       const isMiningNow = result && result.blockHash === HASH_IN_MEMPOOL
-
-      console.info('BCN', result, isMiningNow)
 
       if (!isMiningNow) {
         setMining(false)
@@ -54,8 +52,10 @@ export default function InviteProvider({ children }) {
 
     try {
       const { result, error } = await activateInviteCode(address, inviteCode)
+      console.info(result)
 
       if (error) {
+        console.info(error)
         setLoading(false)
         throw error
       }
@@ -74,7 +74,9 @@ export default function InviteProvider({ children }) {
   }
 
   return (
-    <InviteStateContext.Provider value={{ identity, isLoading, isMining }}>
+    <InviteStateContext.Provider
+      value={{ identity, activationCode, isLoading, isMining }}
+    >
       <InviteDispatchContext.Provider value={{ activateInvite }}>
         {children}
       </InviteDispatchContext.Provider>

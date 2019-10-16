@@ -23,7 +23,8 @@ export default function ActivationForm({ onPress, onChange, inputValue }) {
         <Button
           onPress={() => onPress()}
           title={isMining ? 'Mining...' : 'Activate'}
-          disabled={isLoading || isMining}
+          disabled={isMining}
+          // loading={isLoading}
         />
       </View>
     </View>
