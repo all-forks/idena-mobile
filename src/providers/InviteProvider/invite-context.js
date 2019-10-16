@@ -12,7 +12,7 @@ export const InviteStateContext = createContext()
 
 export default function InviteProvider({ children }) {
   const [activationCode, setActivationCode] = useState()
-  const [activeTx, setActivatonTx] = useState('')
+  const [activeTx, setActivationTx] = useState('')
   const [isLoading, setLoading] = useState(false)
   const [isMining, setMining] = useState(false)
 
@@ -30,10 +30,14 @@ export default function InviteProvider({ children }) {
       if (error) {
         setMining(false)
       }
+
       const isMiningNow = result && result.blockHash === HASH_IN_MEMPOOL
+
+      console.info('BCN', result, isMiningNow)
 
       if (!isMiningNow) {
         setMining(false)
+        setActivationTx('')
       }
     }
   })
@@ -62,7 +66,7 @@ export default function InviteProvider({ children }) {
 
       setLoading(false)
 
-      setActivatonTx(result)
+      setActivationTx(result)
     } catch (error) {
       setLoading(false)
       throw error

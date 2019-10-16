@@ -100,9 +100,9 @@ export default function ImportPrivateKey({ navigation }) {
         keyboardVerticalOffset={
           // eslint-disable-next-line no-nested-ternary
           Platform.OS === 'ios'
-            ? Dimensions.get('window').width >= 375
+            ? Dimensions.get('window').width > 375
               ? -200
-              : -150
+              : -135
             : 0
         }
       >

@@ -8,7 +8,7 @@ import { useInviteState } from '../../../../providers'
 import styles from '../../styles'
 
 export default function ActivationForm({ onPress, onChange, inputValue }) {
-  const { isLoading } = useInviteState()
+  const { isLoading, isMining } = useInviteState()
 
   return (
     <View style={styles.formContainer}>
@@ -22,8 +22,8 @@ export default function ActivationForm({ onPress, onChange, inputValue }) {
         </View>
         <Button
           onPress={() => onPress()}
-          title="Activate"
-          disabled={isLoading}
+          title={isMining ? 'Mining...' : 'Activate'}
+          disabled={isLoading || isMining}
         />
       </View>
     </View>

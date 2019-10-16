@@ -301,7 +301,7 @@ function Profile({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* <Modal
+      <Modal
         isVisible={syncing && !isForceClosedModal}
         style={{ justifyContent: 'flex-end' }}
         onBackdropPress={() => {
@@ -309,7 +309,7 @@ function Profile({ navigation }) {
         }}
       >
         {renderBodySynchronize()}
-      </Modal> */}
+      </Modal>
 
       <Modal
         isVisible={isVisibleQRCode}
