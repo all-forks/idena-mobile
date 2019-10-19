@@ -65,10 +65,7 @@ export default function EnterPassword({ navigation }) {
       navigation.navigate('App')
 
       try {
-        await AsyncStorage.setItem(
-          '@isLoggedIn',
-          navigation.state.params.encodedPrivateKey
-        )
+        await AsyncStorage.setItem('@isLoggedIn', true)
       } catch (error) {
         console.info(error)
       }

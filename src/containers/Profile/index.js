@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -37,7 +37,11 @@ import { Toast, IdentityStatus, Colors } from '../../utils'
 import styles from './styles'
 
 function Profile({ navigation }) {
-  NativeModules.IdenaNode.start()
+  useEffect(() => {
+    // NativeModules.IdenaNode.start()
+    // NativeModules.IdenaNode.start()
+    NativeModules.IdenaNode.readLog().then(value => console.info(value))
+  }, [])
 
   const { canActivateInvite, canMine, identity } = useIdentityState()
   const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 5)

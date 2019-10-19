@@ -29,7 +29,7 @@
 		83A7E3CB37C34061987268B2 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5C15218CDE074ECCB01160B3 /* Fontisto.ttf */; };
 		9DFCF2AF53F1B830C0C96714 /* libPods-IdFonTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9F94C84AD2920BFA6012FA /* libPods-IdFonTests.a */; };
 		AD37301A23461229008FF5C3 /* libPods-IdFon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AD37301923461229008FF5C3 /* libPods-IdFon.a */; };
-		AD9C2EEB23464230007064DD /* Node.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD9C2EEA23464230007064DD /* Node.framework */; };
+		ADB60565235B7BB7003C95C2 /* Node.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ADB60564235B7BB7003C95C2 /* Node.framework */; };
 		BBACC4114E0E4123978BEEE5 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 724BB4BEDA404499873D413E /* Ionicons.ttf */; };
 		BBF8CB5466C9419B889B2721 /* SFUIText-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A733E7D70B0A4FB6BE783CF7 /* SFUIText-Light.ttf */; };
 		C461D34EBC0945209369178D /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7AA61C2BFB8441C099449E76 /* Foundation.ttf */; };
@@ -115,7 +115,7 @@
 		A9957BE7204B4ECE94368D64 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		AA919DCAA30837BCC1A57FEB /* libPods-IdFon-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-IdFon-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD37301923461229008FF5C3 /* libPods-IdFon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libPods-IdFon.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		AD9C2EEA23464230007064DD /* Node.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Node.framework; path = ../../Desktop/Node.framework; sourceTree = "<group>"; };
+		ADB60564235B7BB7003C95C2 /* Node.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Node.framework; path = ../../Downloads/Node.framework; sourceTree = "<group>"; };
 		C1298BD6E18643E6A04E4906 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		C5A3A528E7F641D68C3D2896 /* SFUIText-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFUIText-Medium.ttf"; path = "../src/assets/fonts/SFUIText-Medium.ttf"; sourceTree = "<group>"; };
 		D6E0A9DE050C4583B5FFB9DD /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
@@ -140,7 +140,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AD9C2EEB23464230007064DD /* Node.framework in Frameworks */,
+				ADB60565235B7BB7003C95C2 /* Node.framework in Frameworks */,
 				AD37301A23461229008FF5C3 /* libPods-IdFon.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -199,6 +199,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				ADB60564235B7BB7003C95C2 /* Node.framework */,
 				AD37301923461229008FF5C3 /* libPods-IdFon.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				23BECBAD45C33A10EAA4E32B /* libPods-IdFon.a */,
@@ -234,7 +235,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				AD9C2EEA23464230007064DD /* Node.framework */,
 				13B07FAE1A68108700A75B9A /* IdFon */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* IdFonTests */,

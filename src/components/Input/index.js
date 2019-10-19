@@ -28,7 +28,7 @@ export default function Input({
         <TextInput
           onChangeText={handleChangeText}
           placeholder={placeholder}
-          style={style}
+          style={[styles.input, style]}
           {...otherProps}
         />
         {icon && (

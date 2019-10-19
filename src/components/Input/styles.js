@@ -11,7 +11,9 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgb(232, 234, 237)',
   },
-  input: {},
+  input: {
+    color: Colors.grey,
+  },
   title: {
     color: Colors.accent,
     fontSize: 12,
