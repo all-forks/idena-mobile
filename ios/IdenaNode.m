@@ -45,7 +45,6 @@ RCT_EXPORT_METHOD(start:(RCTPromiseResolveBlock)resolve
         @"Routing": @"dhtclient",
         @"IpfsPort": @40466,
       },
-      @"RPC": @{ @"HTTPPort": @9010},
       @"GenesisConf": @{
         @"GodAddress": @"0xcf0cf37a6e4a8e76e26db95f9eb5f3c73d122257",
         @"FirstCeremonyTime": @1571585400
@@ -98,7 +97,6 @@ RCT_EXPORT_METHOD(
           @"Routing": @"dhtclient",
           @"IpfsPort": @40466,
           },
-      @"RPC": @{ @"HTTPPort": @9010},
       @"GenesisConf": @{
           @"GodAddress": @"0xcf0cf37a6e4a8e76e26db95f9eb5f3c73d122257",
           @"FirstCeremonyTime": @1571585400
