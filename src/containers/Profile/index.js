@@ -306,7 +306,7 @@ function Profile({ navigation }) {
       </ScrollView>
 
       <Modal
-        isVisible={syncing && !isForceClosedModal}
+        isVisible={__DEV__ ? false : syncing && !isForceClosedModal}
         style={{ justifyContent: 'flex-end' }}
         onBackdropPress={() => {
           setToggleVisible(!isVisible)

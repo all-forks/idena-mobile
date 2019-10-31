@@ -65,26 +65,6 @@ import {
 import { EXTRA_FLIPS_DELAY } from './config'
 import { Toast } from './src/utils'
 
-function Screen({ children }) {
-  useEffect(() => {
-    GlobalFont.applyGlobal('SFUIText-Regular')
-  }, [])
-
-  return (
-    <PaperProvider>
-      <AppProviders>
-        <View style={styles.full}>
-          <SafeAreaView style={styles.full}>
-            <View style={styles.scrollView}>
-              <WithValidation>{children}</WithValidation>
-            </View>
-          </SafeAreaView>
-        </View>
-      </AppProviders>
-    </PaperProvider>
-  )
-}
-
 export function AppProviders({ children }) {
   return (
     <TimingProvider>
@@ -101,57 +81,12 @@ export function AppProviders({ children }) {
 
 export function WithValidation({ children }) {
   const { isValidationRunning } = useEpochState()
-
   return (
     <View style={styles.body}>
-      {!isValidationRunning && (
-        <ValidationProvider>{children}</ValidationProvider>
-      )}
-      {isValidationRunning && (
-        <ValidationProvider>
-          <ValidationScreen />
-        </ValidationProvider>
-      )}
+      <ValidationProvider>
+        {isValidationRunning ? <ValidationScreen /> : children}
+      </ValidationProvider>
     </View>
-  )
-}
-
-export function BeforeValidation() {
-  const { epoch } = useEpochState()
-
-  const [text, setText] = React.useState()
-
-  React.useEffect(() => {
-    if (epoch) {
-      switch (epoch.currentPeriod) {
-        case EpochPeriod.None: {
-          setText('Waiting for validation')
-          break
-        }
-        case EpochPeriod.FlipLottery: {
-          setText('Shuflling flips')
-          break
-        }
-        case EpochPeriod.AfterLongSession: {
-          setText('Waiting for validation results')
-          break
-        }
-        default: {
-          setText('Mmm...')
-        }
-      }
-    }
-  }, [epoch])
-
-  return (
-    <Card style={styles.sectionContainer}>
-      <Text style={styles.sectionTitle}>{text}</Text>
-      {epoch && epoch.currentPeriod === EpochPeriod.None && (
-        <Text style={styles.sectionDescription}>
-          {new Date(epoch.nextValidation).toLocaleString()}
-        </Text>
-      )}
-    </Card>
   )
 }
 
@@ -431,84 +366,18 @@ function Timer({ type }) {
   )
 }
 
-function Home() {
-  return (
-    <Screen>
-      <Profile />
-      <BeforeValidation />
-    </Screen>
-  )
-}
-
-function Contacts() {
-  return (
-    <Screen>
-      <Text style={{ color: 'white' }}>Contacts</Text>
-    </Screen>
-  )
-}
-
-function Chats() {
-  return (
-    <Screen>
-      <Text style={{ color: 'white' }}>Chats</Text>
-    </Screen>
-  )
-}
-
-function Validation() {
-  return (
-    <Screen>
-      <ValidationProvider>
-        <ValidationScreen />
-      </ValidationProvider>
-    </Screen>
-  )
-}
-function renderTabBarIcon(tintColor, state) {
-  const { routeName } = state
-  const IconComponent = Icon
-  let iconName
-
-  switch (routeName) {
-    case 'Home':
-      iconName = 'home'
-      break
-    case 'Contacts':
-      iconName = 'contacts'
-      break
-    case 'Wallets':
-      iconName = 'account-balance-wallet'
-      break
-    case 'Chats':
-      iconName = 'chat'
-      break
-    case 'Validation':
-      iconName = 'check'
-      break
-    case 'Profile':
-      iconName = 'person'
-      break
-    default:
-      break
-  }
-
-  return <IconComponent name={iconName} size={25} color={tintColor} />
-}
-
 function LoadingScreen({ navigation }) {
-  async function fetchAsyncStorage() {
-    try {
-      const privateKey = await AsyncStorage.getItem('@isLoggedIn')
-      navigation.navigate(privateKey ? 'App' : 'Auth')
-    } catch (error) {
-      Toast.showToast('Something went wrong')
-    }
-  }
   useEffect(() => {
+    async function fetchAsyncStorage() {
+      try {
+        const privateKey = await AsyncStorage.getItem('@isLoggedIn')
+      navigation.navigate(privateKey ? 'App' : 'Auth')
+      } catch (error) {
+        Toast.showToast('Something went wrong')
+      }
+    }
     fetchAsyncStorage()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [navigation])
   return (
     <View
       style={{
