@@ -1,6 +1,8 @@
 import React, { useReducer, useEffect, createContext, useContext } from 'react'
 import { decode } from 'rlp'
 import dayjs from 'dayjs'
+import reactotron from 'reactotron-react-native'
+
 import { useLogger, useThunk, useInterval } from './lib'
 import {
   fetchFlipHashes,
@@ -14,6 +16,7 @@ const _db = {
   epoch: 0,
   answers: [],
 }
+
 const db = global.validationDb || {
   getValidation() {
     return _db
@@ -62,7 +65,7 @@ function reorderFlips(flips) {
   const loading = []
   const failed = []
   const hidden = []
-  for (let i = 0; i < flips.length; i++) {
+  for (let i = 0; i < flips.length; i += 1) {
     if (flips[i].hidden) {
       hidden.push(flips[i])
     } else if (flips[i].ready && flips[i].loaded) {
@@ -96,11 +99,15 @@ function decodeFlips(data, currentFlips) {
       try {
         const decodedFlip = decode(fromHexString(item.hex.substring(2)))
         const pics = decodedFlip[0]
+        const urls = pics.map(pic =>
+          URL.createObjectURL(new Blob([pic], { type: 'image/jpeg' }))
+        )
         const orders = decodedFlip[1].map(order => order.map(x => x[0] || 0))
         return {
           ...flip,
           ready: true,
           pics,
+          urls,
           orders,
           loaded: true,
           hidden: flip.hidden || item.hidden,
@@ -112,16 +119,18 @@ function decodeFlips(data, currentFlips) {
           hidden: flip.hidden || item.hidden,
           ready: false,
           pics: null,
+          urls: null,
           orders: null,
           answer: null,
           loaded: false,
         }
       }
-    }
-    return {
-      hash: item.hash,
-      hidden: item.hidden,
-      ready: item.ready,
+    } else {
+      return {
+        hash: item.hash,
+        hidden: item.hidden,
+        ready: item.ready,
+      }
     }
   })
 }
@@ -152,6 +161,8 @@ export const PREV = 'PREV'
 export const PICK = 'PICK'
 export const REPORT_ABUSE = 'REPORT_ABUSE'
 export const SHOW_EXTRA_FLIPS = 'SHOW_EXTRA_FLIPS'
+export const WORDS_FETCHED = 'WORDS_FETCHED'
+export const IRRELEVANT_WORDS_TOGGLED = 'IRRELEVANT_WORDS_TOGGLED'
 
 const initialCeremonyState = {
   flips: [],
@@ -295,7 +306,9 @@ function validationReducer(state, action) {
         ...flip,
         failed: !flip.ready,
       }))
-      let availableExtraFlips = flips.filter(x => x.failed).length
+      let availableExtraFlips = flips.filter(
+        flip => flip.failed && !flip.hidden
+      ).length
       let openedFlipsCount = 0
       flips = flips.map(flip => {
         if (!flip.hidden) {
@@ -325,6 +338,34 @@ function validationReducer(state, action) {
         ready: true,
       }
     }
+    case IRRELEVANT_WORDS_TOGGLED: {
+      const { irrelevantWords, ...currentFlip } = state.flips[
+        state.currentIndex
+      ]
+      const flips = [
+        ...state.flips.slice(0, state.currentIndex),
+        { ...currentFlip, irrelevantWords: !irrelevantWords },
+        ...state.flips.slice(state.currentIndex + 1),
+      ]
+      return {
+        ...state,
+        flips,
+      }
+    }
+    case WORDS_FETCHED: {
+      const {
+        words: [hash, fetchedWords],
+      } = action
+      const flip = state.flips.find(f => f.hash === hash)
+      return {
+        ...state,
+        flips: [
+          ...state.flips.slice(0, state.flips.indexOf(flip)),
+          { ...flip, words: flip.words || fetchedWords },
+          ...state.flips.slice(state.flips.indexOf(flip) + 1),
+        ],
+      }
+    }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`)
     }
@@ -339,64 +380,40 @@ export function ValidationProvider({ children }) {
   const [state, dispatch] = useLogger(
     useThunk(useReducer(validationReducer, initialState))
   )
-
-  const epoch = useEpochState()
-  const seconds = useValidationTimer()
+  const { secondsLeftForShortSession } = useValidationTimer()
 
   useEffect(() => {
     const validation = db.getValidation()
     dispatch({ type: LOAD_VALIDATION, validation })
   }, [dispatch])
 
+  const epoch = useEpochState()
+  // const { archiveFlips } = useFlips()
+
   useEffect(() => {
     if (epoch !== null) {
       const { epoch: savedEpoch } = db.getValidation()
       if (epoch.epoch !== savedEpoch) {
         // archiveFlips()
-        db.resetValidation(epoch.epoch)
-        dispatch({ type: RESET_EPOCH, epoch: epoch.epoch })
+        // db.resetValidation(epoch.epoch)
+        // dispatch({ type: RESET_EPOCH, epoch: epoch.epoch })
       }
     }
   }, [dispatch, epoch])
 
   useEffect(() => {
-    async function sendAnswers(type) {
-      switch (type) {
-        case SessionType.Short: {
-          await submitShortAnswers(dispatch, state.flips, epoch.epoch)
-          break
-        }
-        case SessionType.Long: {
-          await submitLongAnswers(dispatch, state.flips, epoch.epoch)
-          break
-        }
-        default:
-          break
-      }
+    async function sendAnswers() {
+      await submitShortAnswers(dispatch, state.flips, epoch.epoch)
     }
 
-    // prevent mess with epoch and seconds switching simultaneously
-    if (seconds === 1) {
+    if (secondsLeftForShortSession === 0) {
       const { shortAnswersSubmitted, flips } = state
-      const { currentPeriod } = epoch
       const hasSomeAnswer = flips.map(x => x.answer).some(hasAnswer)
-
-      if (hasSomeAnswer) {
-        if (
-          currentPeriod === EpochPeriod.ShortSession &&
-          !shortAnswersSubmitted
-        ) {
-          sendAnswers(SessionType.Short)
-        }
-        // if (
-        //   currentPeriod === EpochPeriod.LongSession &&
-        //   !longAnswersSubmitted
-        // ) {
-        //   sendAnswers(SessionType.Long)
-        // }
+      if (hasSomeAnswer && !shortAnswersSubmitted) {
+        sendAnswers()
       }
     }
-  }, [dispatch, epoch, seconds, state])
+  }, [dispatch, epoch.epoch, secondsLeftForShortSession, state])
 
   return (
     <ValidationStateContext.Provider value={state}>
@@ -457,7 +474,7 @@ export function fetchFlips(type, flips = []) {
             }))
           })
         )
-
+        reactotron.log(data)
         dispatch({ type: FETCH_FLIPS_SUCCEEDED, data, sessionType: type })
       } else {
         dispatch({
@@ -502,34 +519,76 @@ export function submitLongAnswers(flips, epoch) {
 }
 
 const GAP = 10
-export function useValidationTimer() {
-  const epoch = useEpochState()
-  const timing = useTimingState()
 
-  const [seconds, setSeconds] = React.useState()
+export function useValidationTimer() {
+  const timing = useTimingState()
+  const epoch = useEpochState()
+
+  const [state, dispatch] = useLogger(
+    useReducer(
+      (prevState, name) => {
+        switch (name) {
+          default:
+          case 'start': {
+            const { nextValidation } = epoch
+            const {
+              ShortSessionDuration: shortSession,
+              LongSessionDuration: longSession,
+            } = timing
+            const shortSessionEnd = dayjs(nextValidation)
+              .add(shortSession, 's')
+              .subtract(GAP, 's')
+            const longSessionEnd = shortSessionEnd.add(longSession, 's')
+            return {
+              ...prevState,
+              shortSessionEnd,
+              longSessionEnd,
+              secondsLeftForShortSession: Math.max(
+                0,
+                shortSessionEnd.diff(dayjs(), 's')
+              ),
+              secondsLeftForLongSession: Math.max(
+                0,
+                longSessionEnd.diff(dayjs(), 's')
+              ),
+            }
+          }
+          case 'tick': {
+            return {
+              ...prevState,
+              secondsLeftForShortSession: Math.max(
+                0,
+                prevState.shortSessionEnd.diff(dayjs(), 's')
+              ),
+              secondsLeftForLongSession: Math.max(
+                0,
+                prevState.longSessionEnd.diff(dayjs(), 's')
+              ),
+            }
+          }
+        }
+      },
+      {
+        shortSessionEnd: null,
+        longSessionEnd: null,
+        secondsLeftForShortSession: null,
+        secondsLeftForLongSession: null,
+      }
+    )
+  )
 
   useEffect(() => {
-    if (epoch && timing) {
-      const { currentPeriod, currentValidationStart, nextValidation } = epoch
-
-      const {
-        ShortSessionDuration: shortSession,
-        LongSessionDuration: longSession,
-      } = timing
-
-      const start = dayjs(currentValidationStart || nextValidation)
-      const duration =
-        shortSession +
-        (currentPeriod === EpochPeriod.ShortSession ? 0 : longSession) -
-        GAP
-      const finish = start.add(duration, 's')
-      const diff = Math.max(Math.min(finish.diff(dayjs(), 's'), duration), 0)
-
-      setSeconds(diff)
+    if (epoch && epoch.nextValidation && timing && Object.keys(timing).length) {
+      dispatch('start')
     }
-  }, [epoch, timing])
+  }, [dispatch, epoch, timing])
 
-  useInterval(() => setSeconds(seconds - 1), seconds ? 1000 : null)
+  useInterval(
+    () => dispatch('tick'),
+    state.secondsLeftForShortSession + state.secondsLeftForLongSession > 0
+      ? 1000
+      : null
+  )
 
-  return seconds
+  return state
 }

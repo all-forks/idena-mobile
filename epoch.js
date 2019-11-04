@@ -21,7 +21,7 @@ export function EpochProvider(props) {
 
   return (
     <EpochStateContext.Provider
-      value={{ epoch, isValidationRunning }}
+      value={{ ...epoch, isValidationRunning }}
       {...props}
     />
   )

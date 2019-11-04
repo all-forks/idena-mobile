@@ -1,6 +1,7 @@
 import { useReducer, useRef, useEffect } from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import reactotron from 'reactotron-react-native'
+
 import { URL } from './config'
 
 export function useRpc(initialMethod, ...initialParams) {
@@ -125,10 +126,12 @@ export function useLogger([state, dispatch]) {
 
   useEffect(() => {
     const action = actionRef.current
-
     if (action) {
-      reactotron.log(action)
-      reactotron.log(state)
+      reactotron.log(
+        action.type ||
+          (action[0] && action[0].length === 1 ? action : action[0]),
+        state
+      )
     }
   }, [state])
 

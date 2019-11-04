@@ -98,7 +98,7 @@ function Profile({ navigation }) {
   }
 
   if (accounts) {
-    fetchBalance()
+    // fetchBalance()
   }
 
   function handleCreateNewFlip() {

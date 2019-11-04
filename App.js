@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import {
   ActivityIndicator,
-  SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
@@ -10,13 +9,12 @@ import {
   Image,
 } from 'react-native'
 
-import { Provider as PaperProvider, Card } from 'react-native-paper'
+import { Card } from 'react-native-paper'
 
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { createSwitchNavigator, createAppContainer } from 'react-navigation'
 
-import GlobalFont from 'react-native-global-font'
 import AsyncStorage from '@react-native-community/async-storage'
 import { useRpc, useInterval, useTimeout } from './lib'
 
@@ -48,12 +46,7 @@ import {
 
 import { arrayBufferToBase64, reorderList } from './utils'
 
-import {
-  EpochProvider,
-  useEpochState,
-  useTimingState,
-  TimingProvider,
-} from './epoch'
+import { EpochProvider, useEpochState, TimingProvider } from './epoch'
 
 import {
   InviteProvider,
@@ -102,9 +95,6 @@ function ValidationScreen() {
 
   const [{ result: epoch }] = useRpc('dna_epoch')
 
-  const isShortSession =
-    epoch && epoch.currentPeriod === EpochPeriod.ShortSession
-
   React.useEffect(() => {
     if (!ready && !shortAnswersSubmitted) {
       dispatch({ type: START_FETCH_FLIPS })
@@ -115,10 +105,12 @@ function ValidationScreen() {
   }, [dispatch, longAnswersSubmitted, ready, shortAnswersSubmitted])
 
   useInterval(
-    async () =>
+    () =>
       dispatch(
         fetchFlips(
-          isShortSession && !shortAnswersSubmitted
+          epoch &&
+            epoch.currentPeriod === EpochPeriod.ShortSession &&
+            !shortAnswersSubmitted
             ? SessionType.Short
             : SessionType.Long,
           flips
@@ -334,20 +326,21 @@ function FlipImage({ source, width, height, style }) {
 }
 
 function Timer({ type }) {
-  let seconds = useValidationTimer()
-  const { epoch } = useEpochState()
-  const timing = useTimingState()
+  const epoch = useEpochState()
+  const {
+    secondsLeftForShortSession: shortSeconds,
+    secondsLeftForLongSession: longSeconds,
+  } = useValidationTimer()
+  const { shortAnswersSubmitted } = useValidationState()
 
-  if (!epoch || !timing) {
+  if (!epoch) {
     return null
   }
 
-  if (
-    type === SessionType.Long &&
-    epoch.currentPeriod === EpochPeriod.ShortSession
-  ) {
-    seconds += timing.LongSessionDuration
-  }
+  const seconds =
+    type === SessionType.Short && !shortAnswersSubmitted
+      ? shortSeconds
+      : longSeconds
 
   return (
     <View style={styles.timer}>

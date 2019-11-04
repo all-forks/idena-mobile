@@ -17,8 +17,8 @@
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* IdFonTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* IdFonTests.m */; };
+		78147EA523705293000B01DB /* Node.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78147EA423705293000B01DB /* Node.framework */; };
 		7814B7CA22E8658A00335AEF /* IdenaNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 7814B7C922E8658A00335AEF /* IdenaNode.m */; };
-		78D2C01F235D9A81000E5748 /* Node.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78D2C01E235D9A81000E5748 /* Node.framework */; };
 		9DFCF2AF53F1B830C0C96714 /* libPods-IdFonTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9F94C84AD2920BFA6012FA /* libPods-IdFonTests.a */; };
 		AD37301A23461229008FF5C3 /* libPods-IdFon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AD37301923461229008FF5C3 /* libPods-IdFon.a */; };
 		BBF8CB5466C9419B889B2721 /* SFUIText-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A733E7D70B0A4FB6BE783CF7 /* SFUIText-Light.ttf */; };
@@ -87,9 +87,9 @@
 		6CEF0D1564454E4F95883E42 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		6DC7F7F8AE464D9E8D6A55A7 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		724BB4BEDA404499873D413E /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
+		78147EA423705293000B01DB /* Node.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Node.framework; sourceTree = "<group>"; };
 		7814B7C822E8658A00335AEF /* IdenaNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdenaNode.h; sourceTree = "<group>"; };
 		7814B7C922E8658A00335AEF /* IdenaNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IdenaNode.m; sourceTree = "<group>"; };
-		78D2C01E235D9A81000E5748 /* Node.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Node.framework; sourceTree = "<group>"; };
 		7AA61C2BFB8441C099449E76 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		8A4E591A050A471F8B53E8D7 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		9492DA3D1B584572B7AA947B /* SFUIText-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFUIText-Bold.ttf"; path = "../src/assets/fonts/SFUIText-Bold.ttf"; sourceTree = "<group>"; };
@@ -124,7 +124,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				78D2C01F235D9A81000E5748 /* Node.framework in Frameworks */,
+				78147EA523705293000B01DB /* Node.framework in Frameworks */,
 				AD37301A23461229008FF5C3 /* libPods-IdFon.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -183,7 +183,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				78D2C01E235D9A81000E5748 /* Node.framework */,
+				78147EA423705293000B01DB /* Node.framework */,
 				AD37301923461229008FF5C3 /* libPods-IdFon.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				23BECBAD45C33A10EAA4E32B /* libPods-IdFon.a */,
