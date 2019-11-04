@@ -47,7 +47,7 @@ function Profile({ navigation }) {
   const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 5)
   const [{ result: accounts }] = usePoll(useRpc('account_list'), 1000 * 10)
 
-  const { syncing } = useChainState()
+  const { syncing, currentBlock, highestBlock } = useChainState()
 
   const [width, setWidth] = useState(0)
   const [balance, setBalance] = useState(0)
@@ -214,7 +214,7 @@ function Profile({ navigation }) {
     return (
       <View style={[styles.modalLg, styles.modal]}>
         <Text style={[styles.text, { fontSize: 20, textAlign: 'left' }]}>
-          Synchronizing...
+          Synchronizing {currentBlock} out of {highestBlock}
         </Text>
 
         <View style={{ marginTop: 10, marginBottom: 15 }}>
