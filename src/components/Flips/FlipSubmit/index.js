@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { View, Image, Text } from 'react-native'
+import { View, Image } from 'react-native'
 
 export default function FlipSubmit({ nextOrder, pics }) {
   return (
@@ -19,8 +19,14 @@ export default function FlipSubmit({ nextOrder, pics }) {
                 source={{ uri: url }}
                 style={[
                   { width: 144, height: 125 },
-                  i === 0 && { borderTopLeftRadius: 8, borderTopRightRadius: 8 },
-                  i === pics.length - 1 && { borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }
+                  i === 0 && {
+                    borderTopLeftRadius: 8,
+                    borderTopRightRadius: 8,
+                  },
+                  i === pics.length - 1 && {
+                    borderBottomLeftRadius: 8,
+                    borderBottomRightRadius: 8,
+                  },
                 ]}
               />
             </View>
@@ -37,8 +43,14 @@ export default function FlipSubmit({ nextOrder, pics }) {
                   source={{ uri: url }}
                   style={[
                     { width: 144, height: 125 },
-                    idx === 0 && { borderTopLeftRadius: 8, borderTopRightRadius: 8 },
-                    idx === pics.length - 1 && { borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }
+                    idx === 0 && {
+                      borderTopLeftRadius: 8,
+                      borderTopRightRadius: 8,
+                    },
+                    idx === pics.length - 1 && {
+                      borderBottomLeftRadius: 8,
+                      borderBottomRightRadius: 8,
+                    },
                   ]}
                 />
               </View>
@@ -51,7 +63,5 @@ export default function FlipSubmit({ nextOrder, pics }) {
 
 FlipSubmit.propTypes = {
   pics: PropTypes.arrayOf(PropTypes.string),
-  //   order: PropTypes.arrayOf(PropTypes.number),
   nextOrder: PropTypes.arrayOf(PropTypes.number),
-  onSubmitFlip: PropTypes.func.isRequired,
 }

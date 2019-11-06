@@ -1,24 +1,21 @@
-import React, { useEffect, useState, createContext } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState, createContext, useContext } from 'react'
 
-import { activateInviteCode, callRpc } from '../../../api'
-import { useInterval } from '../../../lib'
-import { HASH_IN_MEMPOOL } from '../../utils/constants/tx'
-
-import useIndentityState from '../IdentityProvider/identity-state'
+import { activateInviteCode, callRpc } from '../../api'
+import { useInterval } from '../../lib'
+import { HASH_IN_MEMPOOL } from '../utils/constants/tx'
+import { useIdentityState } from './identity-context'
 
 export const InviteDispatchContext = createContext()
 export const InviteStateContext = createContext()
 
-export default function InviteProvider({ children }) {
+// eslint-disable-next-line react/prop-types
+export function InviteProvider({ children }) {
   const [activationCode, setActivationCode] = useState()
   const [activeTx, setActivationTx] = useState('')
   const [isLoading, setLoading] = useState(false)
   const [isMining, setMining] = useState(false)
 
-  const { identity } = useIndentityState()
-
-  useEffect(() => {}, [])
+  const { identity } = useIdentityState()
 
   useInterval(async () => {
     if (activeTx !== '') {
@@ -83,6 +80,18 @@ export default function InviteProvider({ children }) {
   )
 }
 
-InviteProvider.propTypes = {
-  children: PropTypes.element.isRequired,
+export function useInviteState() {
+  const context = useContext(InviteStateContext)
+  if (context === undefined) {
+    throw new Error('InviteStateContext must be within InviteStateProvider')
+  }
+  return context
+}
+
+export function useInviteDispatch() {
+  const context = React.useContext(InviteDispatchContext)
+  if (context === undefined) {
+    throw new Error('useInviteDisptach must be within InviteContextProvider')
+  }
+  return context
 }

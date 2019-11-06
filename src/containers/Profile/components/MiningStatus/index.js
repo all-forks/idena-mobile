@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Switch, StyleSheet } from 'react-native'
+import { View, Text, Switch } from 'react-native'
 import PropTypes from 'prop-types'
 import { callRpc } from '../../../../../api'
 import { Toast, Colors } from '../../../../utils'
 
 import styles from './styles'
-import { useIdentityState } from '../../../../providers'
+import { useIdentityState } from '../../../../providers/identity-context'
 
 export default function MiningStatus({ status }) {
   const [miningStatus, toggleMiningStatus] = useState(status)

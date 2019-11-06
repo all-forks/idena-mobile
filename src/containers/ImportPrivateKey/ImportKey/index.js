@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react'
-import PropTypes from 'prop-types'
 import {
   View,
   KeyboardAvoidingView,
@@ -26,6 +25,7 @@ import scannerIcon from '../../../assets/icons/scanner/scanner2x.png'
 import globalImportStyles from '../styles'
 import styles from './styles'
 
+// eslint-disable-next-line react/prop-types
 export default function ImportPrivateKey({ navigation }) {
   console.disableYellowBox = true
   const [value, setValue] = useState('')
@@ -157,8 +157,4 @@ export default function ImportPrivateKey({ navigation }) {
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   )
-}
-
-PropTypes.propTypes = {
-  navigation: PropTypes.any,
 }

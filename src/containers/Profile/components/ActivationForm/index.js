@@ -3,12 +3,12 @@ import { View } from 'react-native'
 import PropTypes from 'prop-types'
 
 import { Input, Button } from '../../../../components'
-import { useInviteState } from '../../../../providers'
+import { useInviteState } from '../../../../providers/invite-context'
 
 import styles from '../../styles'
 
-export default function ActivationForm({ onPress, onChange, inputValue }) {
-  const { isLoading, isMining } = useInviteState()
+export default function ActivationForm({ onPress, onChange }) {
+  const { isMining } = useInviteState()
 
   return (
     <View style={styles.formContainer}>
@@ -24,7 +24,6 @@ export default function ActivationForm({ onPress, onChange, inputValue }) {
           onPress={() => onPress()}
           title={isMining ? 'Mining...' : 'Activate'}
           disabled={isMining}
-          // loading={isLoading}
         />
       </View>
     </View>
@@ -34,5 +33,4 @@ export default function ActivationForm({ onPress, onChange, inputValue }) {
 ActivationForm.propTypes = {
   onPress: PropTypes.func,
   onChange: PropTypes.func,
-  inputValue: PropTypes.string,
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRpc, usePoll } from './lib'
+import { useRpc, usePoll } from '../../lib'
 
 export const EpochPeriod = {
   FlipLottery: 'FlipLottery',
@@ -10,6 +10,7 @@ export const EpochPeriod = {
 }
 
 const EpochStateContext = React.createContext()
+
 export function EpochProvider(props) {
   const [{ result: epoch }] = usePoll(useRpc('dna_epoch'), 1000 * 1)
 
@@ -36,6 +37,7 @@ export function useEpochState() {
 }
 
 const TimingStateContext = React.createContext()
+
 export function TimingProvider(props) {
   const [{ result: timing }] = usePoll(
     useRpc('dna_ceremonyIntervals'),

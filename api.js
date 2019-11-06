@@ -1,5 +1,6 @@
 import reactotron from 'reactotron-react-native'
-import { URL } from './config'
+
+export const URL = 'http://localhost:9009'
 
 export async function callRpc(method, ...params) {
   try {
@@ -11,17 +12,11 @@ export async function callRpc(method, ...params) {
       },
       body: JSON.stringify({
         method,
-        params:
-          params.length > 0 && method !== 'dna_activateInvite'
-            ? Object.values(params[0])
-            : params,
+        params,
         id: 1,
       }),
     })
-    if (resp.ok && (resp.status === 200 || resp.status === 201)) {
-      const json = await resp.json()
-      return json
-    }
+    return resp.json()
   } catch (error) {
     return { error }
   }
@@ -60,36 +55,22 @@ export async function submitLongAnswers(answers, nonce, epoch) {
   return result
 }
 
-export async function getBalance(address) {
-  // console.info('Address', address)
-  const { result, error } = await callRpc('dna_getBalance', { address })
-  // console.info(result, error)
-  if (error) {
-    throw error
-  }
-  return result
+export async function fetchBalance(address) {
+  return callRpc('dna_getBalance', { address })
 }
 
 export async function activateInviteCode(to, key) {
-  const response = await callRpc('dna_activateInvite', {
+  return callRpc('dna_activateInvite', {
     to,
     key,
   })
-
-  console.info(response)
-
-  return response
 }
 
 export async function fetchChain() {
   try {
-    const { result, error } = await callRpc('bcn_syncing')
-    if (error) {
-      return error
-    }
-
-    return result
+    const sync = await callRpc('bcn_syncing')
+    return sync
   } catch (error) {
-    return error
+    return { error }
   }
 }

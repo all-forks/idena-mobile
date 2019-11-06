@@ -1,6 +1,4 @@
-// Default imports
 import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
 import { Alert, SafeAreaView, StatusBar } from 'react-native'
 import {
   FlipStep,
@@ -15,10 +13,11 @@ import {
 import { FlipType } from '../../components/Flips/utils/use-flips'
 import randomHint from '../../utils/components/flip/flip'
 
-import { useIdentityState } from '../../providers'
+import { useIdentityState } from '../../providers/identity-context'
 
 import styles from './styles'
 
+// eslint-disable-next-line react/prop-types
 function Flip({ navigation }) {
   console.disableYellowBox = true
   const [activeStep, setStep] = useState(0)
@@ -53,8 +52,6 @@ function Flip({ navigation }) {
   //   identity && localFlip.pics.every(hasDataUrl) && identity.canSubmitFlip
 
   const { selectedWordPairs } = localFlip
-
-  async function handleSubmitFlip() {}
 
   const steps = [
     {
@@ -105,6 +102,7 @@ function Flip({ navigation }) {
   ]
 
   function handleClose() {
+    // eslint-disable-next-line react/prop-types
     navigation.pop()
   }
 
@@ -138,7 +136,6 @@ function Flip({ navigation }) {
             onPrev={onPrevControl}
             onNext={onNextControl}
             onClose={handleClose}
-            onSubmitFlip={handleSubmitFlip}
             // allowSubmit={canPublish}
           >
             {children}
@@ -147,10 +144,6 @@ function Flip({ navigation }) {
       </FlipStepper>
     </SafeAreaView>
   )
-}
-
-File.propTypes = {
-  navigation: PropTypes.any,
 }
 
 export default Flip

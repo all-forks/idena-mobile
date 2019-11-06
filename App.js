@@ -42,22 +42,23 @@ import {
   SHOW_EXTRA_FLIPS,
   EpochPeriod,
   useValidationTimer,
-} from './validation'
+} from './src/providers/validation'
 
 import { arrayBufferToBase64, reorderList } from './utils'
 
-import { EpochProvider, useEpochState, TimingProvider } from './epoch'
-
 import {
-  InviteProvider,
-  IdentityProvider,
-  ChainProvider,
-  // EpochProvider,
-} from './src/providers'
+  EpochProvider,
+  useEpochState,
+  TimingProvider,
+} from './src/providers/epoch'
 
-import { EXTRA_FLIPS_DELAY } from './config'
+import { InviteProvider } from './src/providers/invite-context'
+import { IdentityProvider } from './src/providers/identity-context'
+import { ChainProvider } from './src/providers/chain-context'
+
 import { Toast } from './src/utils'
 
+// eslint-disable-next-line react/prop-types
 export function AppProviders({ children }) {
   return (
     <TimingProvider>
@@ -72,6 +73,7 @@ export function AppProviders({ children }) {
   )
 }
 
+// eslint-disable-next-line react/prop-types
 export function WithValidation({ children }) {
   const { isValidationRunning } = useEpochState()
   return (
@@ -82,6 +84,8 @@ export function WithValidation({ children }) {
     </View>
   )
 }
+
+export const EXTRA_FLIPS_DELAY = 30 * 1000
 
 function ValidationScreen() {
   const {
@@ -364,7 +368,7 @@ function LoadingScreen({ navigation }) {
     async function fetchAsyncStorage() {
       try {
         const privateKey = await AsyncStorage.getItem('@isLoggedIn')
-      navigation.navigate(privateKey ? 'App' : 'Auth')
+        navigation.navigate(privateKey ? 'App' : 'Auth')
       } catch (error) {
         Toast.showToast('Something went wrong')
       }

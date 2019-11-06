@@ -21,16 +21,11 @@ import {
   MiningStatus,
 } from './components'
 
-import {
-  useInviteDispatch,
-  useIdentityState,
-  useChainState,
-  useEpochState,
-} from '../../providers'
+import { useInviteDispatch } from '../../providers/invite-context'
+import { useIdentityState } from '../../providers/identity-context'
+import { useChainState } from '../../providers/chain-context'
 
 import { usePoll, useRpc } from '../../../lib'
-
-import { getBalance } from '../../../api'
 
 import { Toast, IdentityStatus, Colors } from '../../utils'
 
@@ -67,36 +62,6 @@ function Profile({ navigation }) {
       identity.state === IdentityStatus.Invite) &&
     canActivateInvite
 
-  async function fetchBalance() {
-    if (accounts) {
-      if (accounts.length === 0) {
-        try {
-          const response = await getBalance(identity.address)
-          setBalance(response)
-          return
-        } catch (error) {
-          console.info(error)
-          return
-        }
-      }
-
-      const balancePromises = accounts.map(account =>
-        getBalance(account).then(response => ({ account, ...response }))
-      )
-
-      try {
-        const balances = await Promise.all(balancePromises)
-        setBalance(
-          balances
-            .map(item => item.balance)
-            .reduce((acc, amount) => acc + amount)
-        )
-      } catch (error) {
-        console.info(error)
-      }
-    }
-  }
-
   if (accounts) {
     // fetchBalance()
   }
@@ -117,13 +82,10 @@ function Profile({ navigation }) {
   }
 
   async function handlePress() {
-    const { address } = identity
-
     if (!identity) return
 
     try {
       const { error } = await activateInvite(inputValue)
-
       if (error) {
         Toast.showToast(error.message)
         return

@@ -2,7 +2,7 @@ import { useReducer, useRef, useEffect } from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import reactotron from 'reactotron-react-native'
 
-import { URL } from './config'
+import { callRpc } from './api'
 
 export function useRpc(initialMethod, ...initialParams) {
   const [rpcBody, dispatchRpc] = useReducer(
@@ -58,17 +58,9 @@ export function useRpc(initialMethod, ...initialParams) {
 
     async function fetchData() {
       try {
-        const resp = await fetch(URL, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(rpcBody),
-        })
-        const json = await resp.json()
+        const resp = await callRpc(...rpcBody)
         if (!ignore) {
-          dataDispatch({ type: 'done', ...json })
+          dataDispatch({ type: 'done', ...resp })
         }
       } catch (error) {
         if (!ignore) {
@@ -111,9 +103,9 @@ export function useInterval(callback, delay) {
   }, [delay])
 }
 
-export function usePoll([state, rpcBody, callRpc], delay) {
-  useInterval(() => callRpc(rpcBody.method, ...rpcBody.params), delay)
-  return [state, rpcBody, callRpc]
+export function usePoll([state, rpcBody, fetcher], delay) {
+  useInterval(() => fetcher(rpcBody.method, ...rpcBody.params), delay)
+  return [state, rpcBody, fetcher]
 }
 
 export function useLogger([state, dispatch]) {

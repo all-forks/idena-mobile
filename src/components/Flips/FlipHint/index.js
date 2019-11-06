@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, Fragment } from 'react'
+import React, { useRef, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { View, Text, TouchableOpacity, Dimensions } from 'react-native'
 

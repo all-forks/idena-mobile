@@ -1,11 +1,9 @@
-import React, { createContext, useReducer } from 'react'
-import PropTypes from 'prop-types'
-import { useInterval } from '../../../lib'
-import { callRpc } from '../../../api'
+import React, { createContext, useReducer, useContext } from 'react'
+import { useInterval } from '../../lib'
+import { callRpc } from '../../api'
 
 export const EpochStateContext = createContext()
 const { Provider } = EpochStateContext
-// export const EpochDispatchContext = createContext()
 
 const initialState = null
 
@@ -26,6 +24,7 @@ function epochReducer(state = initialState, action) {
   }
 }
 
+// eslint-disable-next-line react/prop-types
 export default function EpochProvider({ children }) {
   const [state, dispatch] = useReducer(epochReducer, initialState)
 
@@ -49,6 +48,11 @@ export default function EpochProvider({ children }) {
   return <Provider value={state}>{children}</Provider>
 }
 
-EpochProvider.propTypes = {
-  children: PropTypes.node,
+export function useEpochState() {
+  const context = useContext(EpochStateContext)
+  console.info(context)
+  if (context === undefined) {
+    throw new Error('EpochStateContext must be in EpochStateProvider')
+  }
+  return context
 }

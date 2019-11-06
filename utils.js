@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable no-bitwise */
 export function arrayBufferToBase64(arrayBuffer) {
   let base64 = ''
   const encodings =

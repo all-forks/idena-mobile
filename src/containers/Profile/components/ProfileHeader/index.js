@@ -4,13 +4,14 @@ import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
 
 import { Avatar } from '../../../../components'
-import { EpochPeriod, useValidationState } from '../../../../../validation'
+import { useValidationState } from '../../../../providers/validation'
 
-import { useChainState, useIdentityState } from '../../../../providers'
-import { useEpochState } from '../../../../../epoch'
+import { useChainState } from '../../../../providers/chain-context'
+import { useIdentityState } from '../../../../providers/identity-context'
 import { IdentityStatus } from '../../../../utils'
 
 import styles from '../../styles'
+import { EpochPeriod } from '../../../../providers/epoch'
 
 export default function ProfileHeader({
   state,

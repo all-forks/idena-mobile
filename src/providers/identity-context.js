@@ -1,10 +1,7 @@
-import React, { useEffect, useReducer, createContext } from 'react'
-import PropTypes from 'prop-types'
+import React, { useEffect, useReducer, createContext, useContext } from 'react'
 
-import { useInterval } from '../../../lib'
-
-import { callRpc } from '../../../api'
-import { killIdentity } from '../../api'
+import { callRpc } from '../../api'
+import { useInterval } from '../../lib'
 
 export const IdentityStatus = {
   Undefined: 'Undefined',
@@ -17,61 +14,15 @@ export const IdentityStatus = {
   Killed: 'Killed',
 }
 
-export const IdentityStateContext = createContext()
-export const IdentityDispatchContext = createContext()
+const IdentityStateContext = createContext()
+const IdentityDispatchContext = createContext()
 
 const IDENTITY_GET_REQUEST = 'IDENTITY_GET_REQUEST'
 const IDENTITY_GET_SUCCESS = 'IDENTITY_GET_SUCCESS'
 const IDENTITY_GET_FAILURE = 'IDENTITY_GET_FAILURE'
 
 const initialState = {
-  flipKeyWordPairs: [
-    {
-      words: [2216, 1277],
-      used: true,
-      id: 0,
-    },
-    {
-      words: [2210, 3223],
-      used: false,
-      id: 1,
-    },
-    {
-      words: [176, 2865],
-      used: false,
-      id: 2,
-    },
-    {
-      words: [998, 1263],
-      used: false,
-      id: 3,
-    },
-    {
-      words: [328, 2101],
-      used: false,
-      id: 4,
-    },
-    {
-      words: [1350, 427],
-      used: false,
-      id: 5,
-    },
-    {
-      words: [504, 2537],
-      used: false,
-      id: 6,
-    },
-    {
-      words: [2342, 1979],
-      used: false,
-      id: 7,
-    },
-    {
-      words: [1952, 2221],
-      used: false,
-      id: 8,
-    },
-  ],
+  flipKeyWordPairs: [],
 }
 
 function identityReducer(state, action) {
@@ -87,7 +38,8 @@ function identityReducer(state, action) {
   }
 }
 
-export default function IdentityProvider({ children }) {
+// eslint-disable-next-line react/prop-types
+export function IdentityProvider({ children }) {
   const [state, dispatch] = useReducer(identityReducer, initialState)
 
   useEffect(() => {
@@ -159,15 +111,6 @@ export default function IdentityProvider({ children }) {
     state &&
     [IdentityStatus.Newbie, IdentityStatus.Verified].includes(state.state)
 
-  const killMe = () => {
-    // const { result, error } = killIdentity(state.address)
-    // if (result) {
-    //   setIdentity({ ...identity, state: IdentityStatus.Killed })
-    // } else {
-    //   throw new Error(error.message)
-    // }
-  }
-
   return (
     <IdentityStateContext.Provider
       value={{
@@ -178,13 +121,25 @@ export default function IdentityProvider({ children }) {
         canMine,
       }}
     >
-      <IdentityDispatchContext.Provider value={{ killMe }}>
+      <IdentityDispatchContext.Provider value={dispatch}>
         {children}
       </IdentityDispatchContext.Provider>
     </IdentityStateContext.Provider>
   )
 }
 
-IdentityProvider.propTypes = {
-  children: PropTypes.element.isRequired,
+export function useIdentityState() {
+  const context = useContext(IdentityStateContext)
+  if (context === undefined) {
+    throw new Error('IdentityContext must be in IdentityStateProvider')
+  }
+  return context
+}
+
+export function useIdentityDispatch() {
+  const context = useContext(IdentityDispatchContext)
+  if (context === undefined) {
+    throw new Error('IdentityDispatchContext must be within IdentityProvider')
+  }
+  return context
 }

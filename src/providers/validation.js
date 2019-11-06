@@ -3,13 +3,13 @@ import { decode } from 'rlp'
 import dayjs from 'dayjs'
 import reactotron from 'reactotron-react-native'
 
-import { useLogger, useThunk, useInterval } from './lib'
+import { useLogger, useThunk, useInterval } from '../../lib'
 import {
   fetchFlipHashes,
   fetchFlip,
   submitShortAnswers as submitShortAnswersApi,
   submitLongAnswers as submitLongAnswersApi,
-} from './api'
+} from '../../api'
 import { useEpochState, useTimingState } from './epoch'
 
 const _db = {
@@ -380,6 +380,7 @@ export function ValidationProvider({ children }) {
   const [state, dispatch] = useLogger(
     useThunk(useReducer(validationReducer, initialState))
   )
+  // eslint-disable-next-line no-use-before-define
   const { secondsLeftForShortSession } = useValidationTimer()
 
   useEffect(() => {
@@ -403,6 +404,7 @@ export function ValidationProvider({ children }) {
 
   useEffect(() => {
     async function sendAnswers() {
+      // eslint-disable-next-line no-use-before-define
       await submitShortAnswers(dispatch, state.flips, epoch.epoch)
     }
 

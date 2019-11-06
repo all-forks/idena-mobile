@@ -7,17 +7,10 @@ import AsyncStorage from '@react-native-community/async-storage'
 import FlipImage from '../FlipImage'
 import FlipNotification from '../FlipNotification'
 import FlipGoogleSearch from '../FlipGoogleSearch'
-import { dataUrl } from '../../../utils'
-import styles from './styles'
 
-export default function FlipStory({
-  pics,
-  selectedWordPairs: { name, desc },
-  onUpdateFlip,
-  onNextOrder,
-}) {
-  const [isActiveImageIndex, setActiveImageIndex] = useState(0)
-  const [pickedUrl, setPickedUrl] = useState('')
+export default function FlipStory({ pics, onUpdateFlip, onNextOrder }) {
+  const [, setActiveImageIndex] = useState(0)
+  const [, setPickedUrl] = useState('')
   const [googleSearchWindow, setToggle] = useState({
     isOpened: false,
     currentIdx: 0,
@@ -143,7 +136,6 @@ export default function FlipStory({
 
 FlipStory.propTypes = {
   onUpdateFlip: PropTypes.func,
-  selectedWordPairs: PropTypes.object,
   pics: PropTypes.arrayOf(PropTypes.string),
   onNextOrder: PropTypes.func,
 }

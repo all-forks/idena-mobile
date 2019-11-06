@@ -1,14 +1,14 @@
-import React, { useReducer, createContext } from 'react'
+import React, { useReducer, createContext, useContext } from 'react'
 
-import { useInterval } from '../../../lib'
+import { useInterval } from '../../lib'
 
-import { callRpc } from '../../../api'
+import { callRpc } from '../../api'
 
 const FETCH_SYNC_REQUEST = 'FETCH_SYNC_REQUEST'
 const FETCH_SYNC_SUCCESS = 'FETCH_SYNC_SUCCESS'
 const FETCH_SYNC_FAILED = 'FETCH_SYNC_FAILED'
 
-export const ChainStateContext = createContext()
+const ChainStateContext = createContext()
 const { Provider } = ChainStateContext
 
 const initialState = {
@@ -52,7 +52,7 @@ function chainReducer(state, action) {
 }
 
 // eslint-disable-next-line react/prop-types
-export default function ChainProvider({ children }) {
+export function ChainProvider({ children }) {
   const [state, dispatch] = useReducer(chainReducer, initialState)
 
   function fetchSuccess(sync) {
@@ -67,7 +67,6 @@ export default function ChainProvider({ children }) {
     async () => {
       try {
         const { result, error } = await callRpc('bcn_syncing')
-        // eslint-disable-next-line valid-typeof
         if (error) {
           fetchFailed()
         } else {
@@ -82,4 +81,12 @@ export default function ChainProvider({ children }) {
   )
 
   return <Provider value={state}>{children}</Provider>
+}
+
+export function useChainState() {
+  const context = useContext(ChainStateContext)
+  if (context === undefined) {
+    throw new Error('Context must be in Context Provider')
+  }
+  return context
 }
