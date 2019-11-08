@@ -1,9 +1,26 @@
-import { useReducer, useRef, useEffect } from 'react'
+import { useReducer, useRef, useEffect, useCallback } from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import reactotron from 'reactotron-react-native'
 
 import { callRpc } from './api'
 
+/**
+ * @typedef UseRpcResult
+ * @param {string} method Method name
+ * @param {string} params: Params
+ * @param {string} id: Id
+ * @param {string} result: Result
+ * @param {string} error: Error, if thrown
+ * @param {string} isLoading: Loading state
+ * @param {string} isReady: Ready state
+ */
+
+/**
+ * Call RPC with args
+ * @param {string} initialMethod Method name
+ * @param  {...any} initialParams Params passed as args
+ * @returns {[UseRpcResult, *]} Result
+ */
 export function useRpc(initialMethod, ...initialParams) {
   const [rpcBody, dispatchRpc] = useReducer(
     (state, [method, ...params]) => ({
@@ -33,13 +50,14 @@ export function useRpc(initialMethod, ...initialParams) {
             ...state,
             isLoading: false,
             result: action.result,
+            error: action.error,
             isReady: true,
           }
         case 'fail':
           return {
             ...state,
             isLoading: false,
-            error: action.error.message,
+            error: action.error,
             isReady: true,
           }
         default:
@@ -50,6 +68,7 @@ export function useRpc(initialMethod, ...initialParams) {
       result: null,
       error: null,
       isLoading: false,
+      isReady: false,
     }
   )
 
@@ -58,19 +77,19 @@ export function useRpc(initialMethod, ...initialParams) {
 
     async function fetchData() {
       try {
-        const resp = await callRpc(...rpcBody)
+        const resp = await callRpc(rpcBody.method, ...rpcBody.params)
         if (!ignore) {
           dataDispatch({ type: 'done', ...resp })
         }
       } catch (error) {
         if (!ignore) {
-          dataDispatch({ type: 'error', error })
+          dataDispatch({ type: 'fail', error })
         }
       }
     }
 
     if (rpcBody.method) {
-      fetchData(ignore)
+      fetchData()
     }
 
     return () => {
@@ -79,9 +98,8 @@ export function useRpc(initialMethod, ...initialParams) {
   }, [rpcBody])
 
   return [
-    dataState,
-    rpcBody,
-    (method, ...params) => dispatchRpc([method, ...params]),
+    { ...dataState, ...rpcBody },
+    useCallback((method, ...params) => dispatchRpc([method, ...params]), []),
   ]
 }
 
@@ -103,9 +121,9 @@ export function useInterval(callback, delay) {
   }, [delay])
 }
 
-export function usePoll([state, rpcBody, fetcher], delay) {
-  useInterval(() => fetcher(rpcBody.method, ...rpcBody.params), delay)
-  return [state, rpcBody, fetcher]
+export function usePoll([{ method, params, ...rest }, fetch], delay) {
+  useInterval(() => fetch(method, ...params), delay)
+  return [{ method, params, ...rest }, fetch]
 }
 
 export function useLogger([state, dispatch]) {
@@ -119,11 +137,7 @@ export function useLogger([state, dispatch]) {
   useEffect(() => {
     const action = actionRef.current
     if (action) {
-      reactotron.log(
-        action.type ||
-          (action[0] && action[0].length === 1 ? action : action[0]),
-        state
-      )
+      reactotron.log(action, state)
     }
   }, [state])
 

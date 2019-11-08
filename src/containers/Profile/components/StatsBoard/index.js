@@ -1,14 +1,18 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import PropTypes from 'prop-types'
+
+import { useIdentity } from '../../../../providers/identity-context'
 import { IdentityStatus } from '../../../../utils'
 
 import styles from '../../styles'
+import { useRpc, usePoll } from '../../../../../lib'
 
-export default function StatsBoard({
-  identity: { age, state, totalShortFlipPoints, totalQualifiedFlips },
-  balance,
-}) {
+export default function IdentityStats() {
+  const [
+    { address, age, state, totalShortFlipPoints, totalQualifiedFlips },
+  ] = useIdentity()
+  const [{ result: balance }] = usePoll(useRpc('dna_getBalance', address), 1000)
+
   function calcScores() {
     return totalShortFlipPoints > 0 && totalQualifiedFlips > 0
       ? `${totalShortFlipPoints}/${totalQualifiedFlips} (${Math.round(
@@ -42,11 +46,11 @@ export default function StatsBoard({
     },
     {
       title: 'Balance',
-      value: renderBalanceData(balance.balance),
+      value: renderBalanceData(balance && balance.balance),
     },
     {
       title: 'Stake',
-      value: renderBalanceData(balance.stake),
+      value: renderBalanceData(balance && balance.stake),
     },
   ]
 
@@ -79,9 +83,4 @@ export default function StatsBoard({
       ))}
     </View>
   )
-}
-
-StatsBoard.propTypes = {
-  balance: PropTypes.object,
-  identity: PropTypes.object,
 }

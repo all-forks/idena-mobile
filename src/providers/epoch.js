@@ -36,6 +36,10 @@ export function useEpochState() {
   return context
 }
 
+export function useEpoch() {
+  return [useEpochState()]
+}
+
 const TimingStateContext = React.createContext()
 
 export function TimingProvider(props) {
@@ -43,7 +47,17 @@ export function TimingProvider(props) {
     useRpc('dna_ceremonyIntervals'),
     1000 * 60
   )
-  return <TimingStateContext.Provider value={timing} {...props} />
+  return (
+    <TimingStateContext.Provider
+      value={
+        timing || {
+          ShortSessionDuration: 0,
+          LongSessionDuration: 0,
+        }
+      }
+      {...props}
+    />
+  )
 }
 
 export function useTimingState() {

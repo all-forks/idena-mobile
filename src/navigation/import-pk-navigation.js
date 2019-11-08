@@ -1,13 +1,12 @@
-// Default imports
 import {
   createStackNavigator,
   StackViewTransitionConfigs,
 } from 'react-navigation'
 import React from 'react'
 import { Image } from 'react-native'
-import { EnterPassword, ImportKey, QRCodeScanner } from '../../containers'
 
-import backIcon from '../../assets/icons/back/back-button2x.png'
+import { EnterPassword, ImportKey, QRCodeScanner } from '../containers'
+import backIcon from '../assets/icons/back/back-button2x.png'
 
 export default createStackNavigator(
   {

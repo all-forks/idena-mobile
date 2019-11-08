@@ -1,11 +1,9 @@
 import React from 'react'
 import { View, StatusBar } from 'react-native'
 import PropTypes from 'prop-types'
-// import { SafeAreaView } from 'react-navigation'
 
 import { Provider as PaperProvider } from 'react-native-paper'
 
-// eslint-disable-next-line import/no-cycle
 import { AppProviders, WithValidation } from '../../../App'
 
 import styles from './styles'

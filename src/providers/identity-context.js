@@ -45,38 +45,29 @@ export function IdentityProvider({ children }) {
   useEffect(() => {
     async function fetchData() {
       dispatch({ type: IDENTITY_GET_REQUEST })
-
       try {
         const { result, error } = await callRpc('dna_identity')
-
         if (error) {
           dispatch({ type: IDENTITY_GET_FAILURE, payload: error })
-          return
         }
-
         dispatch({ type: IDENTITY_GET_SUCCESS, payload: result })
       } catch (error) {
-        console.info(error)
         dispatch({ type: IDENTITY_GET_FAILURE, payload: error })
       }
     }
 
     fetchData()
-  }, [])
+  }, [dispatch])
 
   useInterval(async () => {
     dispatch({ type: IDENTITY_GET_REQUEST })
-
     try {
       const { result, error } = await callRpc('dna_identity')
       if (error) {
         dispatch({ type: IDENTITY_GET_FAILURE, payload: error })
-        return
       }
-
       dispatch({ type: IDENTITY_GET_SUCCESS, payload: result })
     } catch (error) {
-      console.info(error)
       dispatch({ type: IDENTITY_GET_FAILURE, payload: error })
     }
   }, 1000)
@@ -114,7 +105,7 @@ export function IdentityProvider({ children }) {
   return (
     <IdentityStateContext.Provider
       value={{
-        identity: state,
+        ...state,
         canSubmitFlip,
         canActivateInvite,
         canValidate,
@@ -142,4 +133,8 @@ export function useIdentityDispatch() {
     throw new Error('IdentityDispatchContext must be within IdentityProvider')
   }
   return context
+}
+
+export function useIdentity() {
+  return [useIdentityState(), useIdentityDispatch()]
 }

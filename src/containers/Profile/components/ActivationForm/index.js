@@ -7,21 +7,21 @@ import { useInviteState } from '../../../../providers/invite-context'
 
 import styles from '../../styles'
 
-export default function ActivationForm({ onPress, onChange }) {
+export default function ActivationForm({ onActivate }) {
   const { isMining } = useInviteState()
-
+  const inputRef = React.useRef()
   return (
     <View style={styles.formContainer}>
       <View style={styles.formActionsHandlers}>
         <View style={{ marginBottom: 16 }}>
           <Input
-            onChange={onChange}
             placeholder="Invitation code"
             style={{ width: '100%' }}
+            ref={inputRef}
           />
         </View>
         <Button
-          onPress={() => onPress()}
+          onPress={() => onActivate(inputRef.current.target.value)}
           title={isMining ? 'Mining...' : 'Activate'}
           disabled={isMining}
         />
@@ -31,6 +31,5 @@ export default function ActivationForm({ onPress, onChange }) {
 }
 
 ActivationForm.propTypes = {
-  onPress: PropTypes.func,
-  onChange: PropTypes.func,
+  onActivate: PropTypes.func,
 }

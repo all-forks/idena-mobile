@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { View, Text, Switch } from 'react-native'
 import PropTypes from 'prop-types'
 import { callRpc } from '../../../../../api'
@@ -10,10 +10,6 @@ import { useIdentityState } from '../../../../providers/identity-context'
 export default function MiningStatus({ status }) {
   const [miningStatus, toggleMiningStatus] = useState(status)
   const { canMine } = useIdentityState()
-
-  useEffect(() => {
-    toggleMiningStatus(status)
-  }, [status])
 
   async function onChangeSwitchStatus(value) {
     // it's exactly toggle in off status
@@ -57,5 +53,4 @@ export default function MiningStatus({ status }) {
 
 MiningStatus.propTypes = {
   status: PropTypes.bool,
-  // identity: PropTypes.object,
 }

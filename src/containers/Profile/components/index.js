@@ -1,5 +1,5 @@
 export { default as ProfileHeader } from './ProfileHeader'
 export { default as ActivationForm } from './ActivationForm'
 export { default as FlipActions } from './FlipActions'
-export { default as StatsBoard } from './StatsBoard'
+export { default as IdentityStats } from './StatsBoard'
 export { default as MiningStatus } from './MiningStatus'

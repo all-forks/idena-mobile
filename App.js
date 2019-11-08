@@ -16,13 +16,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import { createSwitchNavigator, createAppContainer } from 'react-navigation'
 
 import AsyncStorage from '@react-native-community/async-storage'
-import { useRpc, useInterval, useTimeout } from './lib'
+import { useInterval, useTimeout } from './lib'
 
 import { LoadingIndicator } from './src/components'
 
-// Navigation
-import ProfileNavigation from './src/navigation/ProfileNavigation'
-import ImportPrivateKeyNavigation from './src/navigation/ImportPrivateKeyNavigation'
+import ProfileNavigation from './src/navigation/profile-navigation'
+import ImportPrivateKeyNavigation from './src/navigation/import-pk-navigation'
 
 import {
   useValidationState,
@@ -50,6 +49,7 @@ import {
   EpochProvider,
   useEpochState,
   TimingProvider,
+  useEpoch,
 } from './src/providers/epoch'
 
 import { InviteProvider } from './src/providers/invite-context'
@@ -57,6 +57,220 @@ import { IdentityProvider } from './src/providers/identity-context'
 import { ChainProvider } from './src/providers/chain-context'
 
 import { Toast } from './src/utils'
+
+const styles = StyleSheet.create({
+  full: {
+    flex: 1,
+  },
+  scrollView: {
+    backgroundColor: Colors.lighter,
+    flex: 1,
+  },
+  body: {
+    backgroundColor: Colors.white,
+    flex: 1,
+  },
+  sectionContainer: {
+    flex: 1,
+    marginTop: 32,
+    marginHorizontal: 24,
+    padding: 24,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: Colors.black,
+  },
+  sectionDescription: {
+    marginTop: 8,
+    fontSize: 18,
+    fontWeight: '400',
+    color: Colors.black,
+  },
+  validationContainer: {
+    flex: 1,
+    // paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#000',
+    color: '#fff',
+    fontSize: 14,
+  },
+  validationHeading: {
+    width: 190,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    paddingTop: 13,
+  },
+  validationParagraph: {
+    marginBottom: 20,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+    color: 'rgb(150, 153, 158)',
+  },
+  validationTitle: {
+    marginBottom: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#fff',
+  },
+  validationScene: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 60,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  thumbs: {
+    width: '100%',
+    marginBottom: 30,
+  },
+  thumbsScrollContainer: {
+    width: '100%',
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 4,
+    paddingBottom: 4,
+  },
+  thumbCol: {
+    marginLeft: 4,
+    marginRight: 4,
+  },
+  thumb: {
+    width: 44,
+    height: 44,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'transparent',
+  },
+  thumbCurrent: {
+    width: 44,
+    height: 44,
+    borderRadius: 16,
+    marginLeft: 4,
+    marginRight: 4,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'white',
+  },
+  thumbImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  thumbOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(89,89,89,0.8)',
+    color: '#fff',
+  },
+  flipsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  flipsCol: {
+    paddingLeft: 12,
+    paddingRight: 12,
+  },
+  flip: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 4,
+    borderStyle: 'solid',
+    borderColor: 'transparent',
+  },
+  flipActive: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 4,
+    borderStyle: 'solid',
+    borderColor: 'rgb(87,143,255)',
+  },
+  flipImage: {
+    width: 140,
+    height: 120,
+    resizeMode: 'cover',
+  },
+  timer: {
+    position: 'absolute',
+    bottom: 20,
+    left: '50%',
+    color: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 70,
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '500',
+    textAlign: 'center',
+    transform: [{ translateX: -35 }],
+  },
+  buttonReject: {
+    position: 'absolute',
+    bottom: -96,
+    left: -96,
+    backgroundColor: 'rgba(255,102,102,.3)',
+    borderRadius: 200,
+    width: 192,
+    height: 192,
+  },
+  buttonRejectInner: {
+    textAlign: 'center',
+    display: 'flex',
+    position: 'absolute',
+    top: 8,
+    right: 10,
+    width: 96,
+    height: 96,
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '500',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#fff',
+  },
+  buttonNext: {
+    position: 'absolute',
+    bottom: -96,
+    right: -96,
+    backgroundColor: 'rgba(87,143,255,.3)',
+    borderRadius: 200,
+    width: 192,
+    height: 192,
+  },
+  buttonNextInner: {
+    textAlign: 'center',
+    display: 'flex',
+    position: 'absolute',
+    top: 8,
+    left: 10,
+    width: 96,
+    height: 96,
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '500',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#fff',
+  },
+  buttonText: {
+    color: '#fff',
+  },
+})
 
 // eslint-disable-next-line react/prop-types
 export function AppProviders({ children }) {
@@ -97,7 +311,7 @@ function ValidationScreen() {
   } = useValidationState()
   const dispatch = useValidationDispatch()
 
-  const [{ result: epoch }] = useRpc('dna_epoch')
+  const [{ result: epoch }] = useEpoch()
 
   React.useEffect(() => {
     if (!ready && !shortAnswersSubmitted) {
@@ -375,6 +589,7 @@ function LoadingScreen({ navigation }) {
     }
     fetchAsyncStorage()
   }, [navigation])
+
   return (
     <View
       style={{
@@ -401,217 +616,3 @@ const MainNavigator = createSwitchNavigator(
 )
 
 export default createAppContainer(MainNavigator)
-
-const styles = StyleSheet.create({
-  full: {
-    flex: 1,
-  },
-  scrollView: {
-    backgroundColor: Colors.lighter,
-    flex: 1,
-  },
-  body: {
-    backgroundColor: Colors.white,
-    flex: 1,
-  },
-  sectionContainer: {
-    flex: 1,
-    marginTop: 32,
-    marginHorizontal: 24,
-    padding: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.black,
-  },
-  validationContainer: {
-    flex: 1,
-    // paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#000',
-    color: '#fff',
-    fontSize: 14,
-  },
-  validationHeading: {
-    width: 190,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    paddingTop: 13,
-  },
-  validationParagraph: {
-    marginBottom: 20,
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
-    color: 'rgb(150, 153, 158)',
-  },
-  validationTitle: {
-    marginBottom: 10,
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#fff',
-  },
-  validationScene: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 60,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  thumbs: {
-    width: '100%',
-    marginBottom: 30,
-  },
-  thumbsScrollContainer: {
-    width: '100%',
-    paddingLeft: 12,
-    paddingRight: 12,
-    paddingTop: 4,
-    paddingBottom: 4,
-  },
-  thumbCol: {
-    marginLeft: 4,
-    marginRight: 4,
-  },
-  thumb: {
-    width: 44,
-    height: 44,
-    borderRadius: 16,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: 'transparent',
-  },
-  thumbCurrent: {
-    width: 44,
-    height: 44,
-    borderRadius: 16,
-    marginLeft: 4,
-    marginRight: 4,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: 'white',
-  },
-  thumbImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  thumbOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(89,89,89,0.8)',
-    color: '#fff',
-  },
-  flipsContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  flipsCol: {
-    paddingLeft: 12,
-    paddingRight: 12,
-  },
-  flip: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    borderWidth: 4,
-    borderStyle: 'solid',
-    borderColor: 'transparent',
-  },
-  flipActive: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    borderWidth: 4,
-    borderStyle: 'solid',
-    borderColor: 'rgb(87,143,255)',
-  },
-  flipImage: {
-    width: 140,
-    height: 120,
-    resizeMode: 'cover',
-  },
-  timer: {
-    position: 'absolute',
-    bottom: 20,
-    left: '50%',
-    color: '#fff',
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: 70,
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: '500',
-    textAlign: 'center',
-    transform: [{ translateX: -35 }],
-  },
-  buttonReject: {
-    position: 'absolute',
-    bottom: -96,
-    left: -96,
-    backgroundColor: 'rgba(255,102,102,.3)',
-    borderRadius: 200,
-    width: 192,
-    height: 192,
-  },
-  buttonRejectInner: {
-    textAlign: 'center',
-    display: 'flex',
-    position: 'absolute',
-    top: 8,
-    right: 10,
-    width: 96,
-    height: 96,
-    fontSize: 15,
-    lineHeight: 22,
-    fontWeight: '500',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#fff',
-  },
-  buttonNext: {
-    position: 'absolute',
-    bottom: -96,
-    right: -96,
-    backgroundColor: 'rgba(87,143,255,.3)',
-    borderRadius: 200,
-    width: 192,
-    height: 192,
-  },
-  buttonNextInner: {
-    textAlign: 'center',
-    display: 'flex',
-    position: 'absolute',
-    top: 8,
-    left: 10,
-    width: 96,
-    height: 96,
-    fontSize: 15,
-    lineHeight: 22,
-    fontWeight: '500',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#fff',
-  },
-  buttonText: {
-    color: '#fff',
-  },
-})

@@ -476,7 +476,6 @@ export function fetchFlips(type, flips = []) {
             }))
           })
         )
-        reactotron.log(data)
         dispatch({ type: FETCH_FLIPS_SUCCEEDED, data, sessionType: type })
       } else {
         dispatch({

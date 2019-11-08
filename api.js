@@ -1,6 +1,5 @@
-import reactotron from 'reactotron-react-native'
-
-export const URL = 'http://localhost:9009'
+// eslint-disable-next-line no-undef
+export const URL = __DEV__ ? 'http://localhost:9010' : 'http://localhost:9009'
 
 export async function callRpc(method, ...params) {
   try {
@@ -20,12 +19,6 @@ export async function callRpc(method, ...params) {
   } catch (error) {
     return { error }
   }
-}
-
-function strip(obj) {
-  // eslint-disable-next-line no-param-reassign
-  Object.keys(obj).forEach(key => !obj[key] && delete obj[key])
-  return obj
 }
 
 export async function fetchFlipHashes(type) {

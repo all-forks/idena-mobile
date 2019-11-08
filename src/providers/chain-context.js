@@ -90,3 +90,7 @@ export function useChainState() {
   }
   return context
 }
+
+export function useChain() {
+  return [useChainState()]
+}
