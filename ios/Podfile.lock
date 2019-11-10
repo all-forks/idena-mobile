@@ -101,10 +101,16 @@ PODS:
     - React
   - RNPermissions (2.0.2):
     - React
+  - RNSentry (1.0.9):
+    - React
+    - Sentry (~> 4.4.0)
   - RNSVG (9.12.0):
     - React
   - RNVectorIcons (6.6.0):
     - React
+  - Sentry (4.4.0):
+    - Sentry/Core (= 4.4.0)
+  - Sentry/Core (4.4.0)
   - yoga (0.60.3.React)
 
 DEPENDENCIES:
@@ -136,6 +142,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
+  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -143,6 +150,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - boost-for-react-native
+    - Sentry
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -201,6 +209,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
+  RNSentry:
+    :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
@@ -238,8 +248,10 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: e99188b8a89ea0edddc82d8831cd5142f4550fdc
   RNGestureHandler: 311e3b1cef021a7c9ef31e97e7dc31970cc6288d
   RNPermissions: 09451e563764b938c2bbc945ca430f758044f0dd
+  RNSentry: ea67b65b328405ed060f43a2940003ed93b5c4eb
   RNSVG: 2e097b92aaa6d4e0f354fd7c49cbf3b17f8b3920
   RNVectorIcons: 66af4d5c8ff4f584c7b7cd9c4b0780920f27fce2
+  Sentry: 26650184fe71eb7476dfd2737acb5ea6cc64b4b1
   yoga: 88c514f310aff89b94a14c5fbf44b95735af0cb7
 
 PODFILE CHECKSUM: d7fe20dd269a794429c69bc406aeaece6da47738

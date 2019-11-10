@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.6.1",
+    "@sentry/react-native": "^1.0.9",
     "buffer": "^5.2.1",
     "dayjs": "^1.8.15",
     "dequal": "^1.0.0",
