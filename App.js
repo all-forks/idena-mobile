@@ -586,8 +586,8 @@ function LoadingScreen({ navigation }) {
   useEffect(() => {
     async function fetchAsyncStorage() {
       try {
-        const privateKey = await AsyncStorage.getItem('@isLoggedIn')
-        navigation.navigate(privateKey ? 'App' : 'Auth')
+        const hasPrivate = await AsyncStorage.getItem('hasPrivateKey')
+        navigation.navigate(hasPrivate === '1' ? 'App' : 'Auth')
       } catch (error) {
         Toast.showToast('Something went wrong')
       }
