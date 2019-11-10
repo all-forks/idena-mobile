@@ -14,8 +14,9 @@ import { Card } from 'react-native-paper'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { createSwitchNavigator, createAppContainer } from 'react-navigation'
-
 import AsyncStorage from '@react-native-community/async-storage'
+import * as Sentry from '@sentry/react-native'
+
 import { useInterval, useTimeout } from './lib'
 
 import { LoadingIndicator } from './src/components'
@@ -57,6 +58,10 @@ import { IdentityProvider } from './src/providers/identity-context'
 import { ChainProvider } from './src/providers/chain-context'
 
 import { Toast } from './src/utils'
+
+Sentry.init({
+  dsn: 'https://b712a008997745a3a5e6cb9799d708e8@sentry.io/1814600',
+})
 
 const styles = StyleSheet.create({
   full: {
