@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   Clipboard,
   Linking,
+  NativeModules,
 } from 'react-native'
 import Modal from 'react-native-modal'
 import QRCode from 'react-native-qrcode-svg'
 
-import { LoadingIndicator } from '../../components'
+import { LoadingIndicator, Button } from '../../components'
 import {
   ProfileHeader,
   ActivationForm,
@@ -152,22 +153,24 @@ function Profile({ navigation }) {
             />
           )}
           <MiningStatus status={online} />
+          <Sync />
+          <NodeLog />
         </View>
       </ScrollView>
 
       <Modal
         // eslint-disable-next-line no-undef
-        isVisible={__DEV__ ? false : syncing}
+        isVisible={true || __DEV__ ? false : syncing}
         style={{ justifyContent: 'flex-end' }}
       >
-        <Sync dispatch={dispatch} />
+        <Sync />
       </Modal>
       <Modal
         isVisible={state.isQRAddressVisible}
         style={{ justifyContent: 'flex-end' }}
         onBackdropPress={() => dispatch(['address_dismissed'])}
       >
-        {<QRAddress />}
+        <QRAddress />
       </Modal>
       <Modal
         isVisible={state.isFlipVisible}
@@ -264,6 +267,23 @@ function FlipEnough() {
         <Text style={[styles.address, { fontSize: 15 }]}>Okay</Text>
       </TouchableOpacity>
     </View>
+  )
+}
+
+function NodeLog() {
+  const [log, setLog] = React.useState('')
+  return (
+    <ScrollView>
+      <Button
+        onPress={async () => {
+          setLog(await NativeModules.IdenaNode.readLog())
+        }}
+        title="Read log"
+      ></Button>
+      <View>
+        <Text>{log}</Text>
+      </View>
+    </ScrollView>
   )
 }
 

@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  NativeModules,
 } from 'react-native'
 
 import { Card } from 'react-native-paper'
@@ -279,6 +280,15 @@ const styles = StyleSheet.create({
 
 // eslint-disable-next-line react/prop-types
 export function AppProviders({ children }) {
+  useEffect(() => {
+    async function checkPrivateKey() {
+      const hasPk = await AsyncStorage.getItem('hasPrivateKey')
+      if (hasPk === '1') {
+        NativeModules.IdenaNode.start()
+      }
+    }
+    checkPrivateKey()
+  }, [])
   return (
     <TimingProvider>
       <EpochProvider>
@@ -586,8 +596,8 @@ function LoadingScreen({ navigation }) {
   useEffect(() => {
     async function fetchAsyncStorage() {
       try {
-        const hasPrivate = await AsyncStorage.getItem('hasPrivateKey')
-        navigation.navigate(hasPrivate === '1' ? 'App' : 'Auth')
+        const hasPrivateKey = await AsyncStorage.getItem('hasPrivateKey')
+        navigation.navigate(hasPrivateKey === '1' ? 'App' : 'Auth')
       } catch (error) {
         Toast.showToast('Something went wrong')
       }

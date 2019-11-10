@@ -21,56 +21,26 @@ export default function EnterPassword({ navigation }) {
   async function handlePress() {
     const { IdenaNode } = NativeModules
     setLoading(true)
-
     try {
       const message = await IdenaNode.provideMobileKey(
         navigation.state.params.encodedPrivateKey,
         textInputValue
       )
-
-      if (message !== 'done' && message.includes('error while decoding key')) {
-        Keyboard.dismiss()
-        Toast.showToast('Invalid private key or password')
-        setLoading(false)
-        return
-      }
-
       if (message !== 'done') {
-        Keyboard.dismiss()
-        Toast.showToast(message)
-        setLoading(false)
-        return
-      }
-    } catch (error) {
-      Keyboard.dismiss()
-      Toast.showToast(error.message)
-      setLoading(false)
-      return
-    }
-
-    try {
-      const message = await IdenaNode.start()
-
-      if (message !== 'started') {
-        Keyboard.dismiss()
         Toast.showToast(
-          message === 'key is already exists'
-            ? 'key is already exists or invalid private key or password'
+          message.includes('error while decoding key')
+            ? 'Invalid private key or password'
             : message
         )
-        setLoading(false)
-        return
-      }
-
-      navigation.navigate('App')
-
-      try {
+      } else {
         await AsyncStorage.setItem('hasPrivateKey', '1')
-      } catch (error) {
-        console.error(error)
+        navigation.navigate('App')
       }
     } catch (error) {
       Toast.showToast(error.message)
+    } finally {
+      Keyboard.dismiss()
+      setLoading(false)
     }
   }
 
