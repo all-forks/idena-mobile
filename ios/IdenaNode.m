@@ -22,7 +22,7 @@ RCT_EXPORT_METHOD(start:(RCTPromiseResolveBlock)resolve
   NSDictionary *configDictionary = @{
    @"P2P": @{
        @"MaxPeers": @6,
-       @"DialRatio": @2
+       @"DialRatio": @1
    },
    @"IpfsConf": @{
        @"LowWater": @5,
@@ -79,7 +79,7 @@ RCT_EXPORT_METHOD(
   NSDictionary *configDictionary = @{
     @"P2P": @{
         @"MaxPeers": @6,
-        @"DialRatio": @2
+        @"DialRatio": @1
     },
     @"IpfsConf": @{
         @"LowWater": @5,
