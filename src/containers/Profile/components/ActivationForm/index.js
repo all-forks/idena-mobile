@@ -9,7 +9,7 @@ import styles from '../../styles'
 
 export default function ActivationForm({ onActivate }) {
   const { isMining } = useInviteState()
-  const inputRef = React.useRef()
+  const [code, setCode] = React.useState()
   return (
     <View style={styles.formContainer}>
       <View style={styles.formActionsHandlers}>
@@ -17,11 +17,12 @@ export default function ActivationForm({ onActivate }) {
           <Input
             placeholder="Invitation code"
             style={{ width: '100%' }}
-            ref={inputRef}
+            onChange={setCode}
+            value={code}
           />
         </View>
         <Button
-          onPress={() => onActivate(inputRef.current.target.value)}
+          onPress={() => onActivate(code)}
           title={isMining ? 'Mining...' : 'Activate'}
           disabled={isMining}
         />
